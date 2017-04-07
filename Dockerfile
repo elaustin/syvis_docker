@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
 
 # install dependencies of the SYVisualization app
-RUN R -e "install.packages(c('leaflet', 'RColorBrewer', 'scales', 'lattice', 'dplyr', 'DT', 'data.table','ggplot2','RSQLite'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('leaflet', 'RColorBrewer', 'scales', 'lattice', 'dplyr', 'DT', 'data.table','ggplot2','RSQLite', 'ggthemes'), repos='https://cloud.r-project.org/')"
 
 # copy the app to the image
 RUN mkdir /root/visualizer
