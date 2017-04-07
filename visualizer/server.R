@@ -55,10 +55,11 @@ shinyServer(function(input, output, session) {
   data_wide[,hour:=hour(as.POSIXct(datetime, origin="1970-01-01"))]
   print(ggplot(data=data_wide[date_day%in%as.character(input$date1) ],
                aes_string("hour",varvalue, color="site")) +
-         geom_line()+theme_pander(18)+xlab("Time (h)")+ylim(0,maxval)+
+         geom_line()+theme_pander(18)+xlab("Time (h)")+
          ylab("")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
+        scale_y_continuous(breaks = seq(0, maxval, 10), limits=c(0, maxval))+
          scale_color_discrete(name="")
   )
  })
