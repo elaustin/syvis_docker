@@ -13,13 +13,14 @@ vars <- c(
 )
 
 
-shinyUI(navbarPage("Community Monitoring", id = "nav",
+shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  tabPanel("Interactive map",
   div(class = "outer",
    
    tags$head(
     # Include our custom CSS
     includeCSS("styles.css"),
+    includeScript("google-analytics.js"),
     includeScript("gomap.js")
     ),
    
@@ -33,7 +34,7 @@ shinyUI(navbarPage("Community Monitoring", id = "nav",
     draggable = TRUE,
     top = 60,
     #left = "auto",
-    right = 20,
+    right = 120,
     bottom = "auto",
     width = 330,
     height = "auto",
@@ -117,10 +118,10 @@ shinyUI(navbarPage("Community Monitoring", id = "nav",
             draggable = TRUE,
             top = 60,
             #left = "auto",
-            right = 120,
+            right = "auto",
             bottom = "auto",
             width = 800,
-            height = 800,
+            height = 600,
             h2("Hourly Data Plot"), 
             dateInput("date1", label = "Date input", value = "2017-01-01"),
             selectInput("tsvars", "Pollutant:", vars, selected="pm25"),
