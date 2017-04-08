@@ -20,9 +20,9 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    tags$head(
     # Include our custom CSS
     includeCSS("styles.css"),
-    includeScript("google-analytics.js"),
     includeScript("gomap.js")
     ),
+   tags$head(includeScript("google-analytics.js")),
    
    leafletOutput("map", width = "100%", height ="100%"),
    
