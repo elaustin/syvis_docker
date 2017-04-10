@@ -41,7 +41,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     
     h2("San Ysidro Air Explorer"), #h2("ZIP explorer"),
     
-    dateInput("date", label = h3("Date input"), value = "2017-01-01"),
+    dateInput("date", label = h3("Date input"), value = max(data_wide$date_day, na.rm=T)),
     
     
     selectInput("color", "Color", vars, selected="pm25")),
@@ -111,22 +111,53 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  ),
 
   tabPanel("Hourly Data",
-           absolutePanel(
-            id = "controls",
-            class = "panel panel-default",
-            fixed = TRUE,
-            draggable = TRUE,
-            top = 60,
-            #left = "auto",
-            right = "auto",
-            bottom = "auto",
-            width = 800,
-            height = 600,
-            h2("Hourly Data Plot"), 
-            dateInput("date1", label = "Date input", value = "2017-01-01"),
-            selectInput("tsvars", "Pollutant:", vars, selected="pm25"),
-          plotOutput("tsPoll", height = 600) #plotOutput("scatterCollegeIncome", height = 250)
- )),
+           # absolutePanel(
+           #  id = "controls",
+           #  class = "panel panel-default",
+           #  fixed = TRUE,
+           #  draggable = TRUE,
+           #  top = 60,
+           #  #left = "auto",
+           #  right = "auto",
+           #  bottom = "auto",
+           #  width = 800,
+           #  height = 600,
+           
+           pageWithSidebar(
+             headerPanel('Hourly Data Plot, Select Sites and Dates'),
+             sidebarPanel(
+               dateInput("date1", label = "Date input", value =max(data_wide$date_day, na.rm=T)),
+               
+               radioButtons(
+                 inputId="radio",
+                 label="Site Selection Options:",
+                 choices=list(
+                   "All",
+                   "Manual Select"
+                 ),
+                 selected="All"),
+               
+               conditionalPanel(
+                 condition = "input.radio != 'All'",
+                 checkboxGroupInput(
+                   "tssites", 
+                   "Show these sites:",
+                   choices=site_locations$site )),
+                 
+             
+               selectInput("tsvars", "Pollutant:", vars, selected="pm25")
+             ),
+             mainPanel(
+               plotOutput("tsPoll", height = 400) #plotOutput("scatterCollegeIncome", height = 250)
+             )
+           )
+          #   h2("Hourly Data Plot"), 
+          #   dateInput("date1", label = "Date input", value = "2017-01-01"),
+          #  checkboxGroupInput("tssites", "Sites:", site_locations$site, selected="Community Center", inline=T),
+          #   selectInput("tsvars", "Pollutant:", vars, selected="pm25"),
+          # plotOutput("tsPoll", height = 600) #plotOutput("scatterCollegeIncome", height = 250)
+ #)
+ ),
  
  conditionalPanel("false", icon("crosshair"))
 ))

@@ -18,6 +18,18 @@ options(device='cairo')
 
 shinyServer(function(input, output, session) {
  
+##create data
+  
+  data <- reactive ({
+    
+      if(input$radio == "All"){
+        data_wide
+      } else {
+        data_wide[site%in%input$tssites]
+      }
+      
+    })
+  
  ## Interactive Map ###########################################
  
  # Create the map
@@ -48,18 +60,20 @@ shinyServer(function(input, output, session) {
 
  output$tsPoll <- renderPlot({
   # If no zipcodes are in view, don't plot
+   
+   varvalue<-input$tsvars
+   scaleby<-ifelse(input$tsvars=="CO",0.5,10)
  
-  varvalue<-input$tsvars
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
-  maxval<-quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995)
+  maxval<-quantile(data()[,input$tsvars,with=F],na.rm=T, .9995)
   data_wide[,hour:=hour(as.POSIXct(datetime, origin="1970-01-01"))]
-  print(ggplot(data=data_wide[date_day%in%as.character(input$date1) ],
+  print(ggplot(data=data()[date_day%in%as.character(input$date1)],
                aes_string("hour",varvalue, color="site")) +
-         geom_line()+theme_pander(18)+xlab("Time (h)")+
+         geom_line(size=1.2)+theme_pander(18)+xlab("Time (h)")+
          ylab("")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-        scale_y_continuous(breaks = seq(0, maxval, 10), limits=c(0, maxval))+
+        scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
          scale_color_discrete(name="")
   )
  })
@@ -98,13 +112,13 @@ shinyServer(function(input, output, session) {
    
    colorData <- data_summary[[colorBy]]
    palette_rev <- rev(brewer.pal(5, "YlGnBu"))
-   pal <- colorBin(palette_rev, round(colorData,0), 5,pretty=F)}
+   pal <- colorBin(palette_rev, signif(colorData,2), 5,pretty=F)}
   
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
    palette_rev2 <- rev(brewer.pal(5, "YlGnBu"))
-   pal2 <- colorBin(palette_rev2, round(colorData2,0), 5,pretty=F)}
+   pal2 <- colorBin(palette_rev2, signif(colorData2,2), 5,pretty=F)}
   
   #}
   
