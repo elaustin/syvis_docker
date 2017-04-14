@@ -165,8 +165,12 @@ shinyServer(function(input, output, session) {
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <- brewer.pal(5, "Oranges")
-   pal2 <- colorBin(palette_rev2,c(0,quantile(data()[,colorBy, by=date_day,with=F], na.rm=T, .99)), 6, pretty=T)}
+   palette_rev2 <-c('#dadaeb','#bcbddc',
+                    '#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d')
+   pal2 <- colorBin(palette_rev2,c(0,
+                                   quantile(data()[,colorBy, 
+                                                   by=date_day,with=F], 
+                                            na.rm=T, .996)), 6, pretty=T)}
   
   #}
   
@@ -188,14 +192,14 @@ shinyServer(function(input, output, session) {
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
    addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
-              stroke=FALSE, fillOpacity=0.8, fillColor=pal2(colorData)) %>%
+              stroke=FALSE, fillOpacity=1, fillColor=pal2(colorData)) %>%
    addLegend("topleft", pal=pal2, values=colorData, title=as.character(legend.values[colorBy]),
              layerId="colorLegend",na.label = "No Data")
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
        addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
-                      stroke=FALSE, fillOpacity=0.8, fillColor="grey") %>%
+                      stroke=FALSE, fillOpacity=1, fillColor="grey") %>%
      addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
                layerId="colorLegend")}
     
