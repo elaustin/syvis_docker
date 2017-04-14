@@ -56,9 +56,13 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    
    tags$div(
     id = "cite",
-    'Data compiled for ',
-    tags$em('San Ysidro Community Air Monitoring Data Project'),
-    '\nPI Edmund Seto, University of Washington, Funded by OEHHA.'
+    tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
+    'Data compiled for the ',
+    tags$a(href="http://deohs.washington.edu/syairstudy",
+           tags$em('San Ysidro Community Air Monitoring Data Project')),tags$br(),
+    "Principle Investigator: Edmund Seto at University of Washington", tags$br(),"Funded by the ", 
+    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)"),
+    tags$br(),"Created by Elena Austin"
    )
   )
  ),
@@ -148,6 +152,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                selectInput("tsvars", "Pollutant:", vars, selected="pm25")
              ),
              mainPanel(
+               
                plotOutput("tsPoll", height = 400) #plotOutput("scatterCollegeIncome", height = 250)
              )
            )

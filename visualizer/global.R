@@ -6,6 +6,7 @@ library(data.table)
 
 #site_locations
 site_locations<-fread("http://staff.washington.edu/elaustin/site_locations_nopred.csv")
+site_locations<-site_locations[!is.na(longitude)]
 
 # datechar<-("2017-01-01")
 # 
@@ -25,12 +26,18 @@ data_wide[,NO2_donovan:=NO2_donovan*1000]
 data_wide[,NOX_donovan:=NOX_donovan*1000]
 data_wide[,OZONE_donovan:=OZONE_donovan*1000]
 
+data_wide[,site:=as.factor(site)]
+
+data_wide<-data_wide[datetime>=as.POSIXct("2017-01-01"),]
+
 data_summary1<-data_wide[,
                         lapply(.SD, FUN = function (x)
                          mean(as.numeric(as.character(x)), na.rm=T)), 
                         .SDcols=c("longitude","latitude",
                                   "pm25","CO","NO","NO2","O3",grep("_donovan",names(data_wide),value=T)),
                         by="site_short"]
+
+setnames(data_wide, c("OZONE_donovan", "PM25HR_donovan"), c("O3_donovan", "pm25_donovan"))
 
 
 

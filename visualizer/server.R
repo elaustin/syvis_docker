@@ -27,8 +27,22 @@ shinyServer(function(input, output, session) {
       } else {
         data_wide[site%in%input$tssites]
       }
-      
     })
+  
+  data_summary <- reactive ({
+    data_summary<-data_wide[date_day%in%as.character(input$date),
+                            lapply(.SD, FUN = function (x)
+                              mean(as.numeric(as.character(x)), na.rm=T)), .SDcols=c("longitude","latitude",
+                                      c("pm25","CO","NO","NO2","O3")),
+                            by="site_short"]
+    missing_sites<-
+      site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
+    missing_sites<-site_locations[site_short%in%missing_sites]
+    missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
+    data_summary<-rbindlist(list(data_summary,missing_sites),fill=T)
+    data_summary
+    
+  })
   
  ## Interactive Map ###########################################
  
@@ -44,38 +58,83 @@ shinyServer(function(input, output, session) {
  
  # A reactive expression that returns the set of zips that are
  # in bounds right now
- sitesInBounds <- reactive({
-  if (is.null(input$map_bounds))
-   return(data_summary[FALSE,])
-  bounds <- input$map_bounds
-  latRng <- range(bounds$north, bounds$south)
-  lngRng <- range(bounds$east, bounds$west)
-  
-  subset(data_wide,
-         latitude >= latRng[1] & latitude <= latRng[2] &
-          longitude >= lngRng[1] & longitude <= lngRng[2] &
-          date_day%in%as.character(input$date))
- })
- 
+ # sitesInBounds <- reactive({
+ #  if (is.null(input$map_bounds))
+ #   return(data_summary[FALSE,])
+ #  bounds <- input$map_bounds
+ #  latRng <- range(bounds$north, bounds$south)
+ #  lngRng <- range(bounds$east, bounds$west)
+ #  
+ #  subset(data_wide,
+ #         latitude >= latRng[1] & latitude <= latRng[2] &
+ #          longitude >= lngRng[1] & longitude <= lngRng[2] &
+ #          date_day%in%as.character(input$date))
+ # })
+ # 
 
  output$tsPoll <- renderPlot({
   # If no zipcodes are in view, don't plot
-   
+   #fix selecting sites!!!!
    varvalue<-input$tsvars
    scaleby<-ifelse(input$tsvars=="CO",0.5,10)
+   plotdata=data()[date_day%in%as.character(input$date1)]
+   plotdata[,hour:=hour(plotdata$datetime)]
+   plotdata[,site:=factor(site, levels=unique(site_locations$site))]
  
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
-  maxval<-quantile(data()[,input$tsvars,with=F],na.rm=T, .9995)
-  data_wide[,hour:=hour(as.POSIXct(datetime, origin="1970-01-01"))]
-  print(ggplot(data=data()[date_day%in%as.character(input$date1)],
+  maxval<-quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995)
+  
+  myColors <- brewer.pal(nrow(site_locations),"Paired")
+  names(myColors) <- levels(as.factor(site_locations$site))
+  colScale <- scale_color_manual(name = "",values = myColors)
+  
+  if(varvalue%in%c("CO") & nrow(plotdata)>0){
+  print(ggplot(data=plotdata,
                aes_string("hour",varvalue, color="site")) +
-         geom_line(size=1.2)+theme_pander(18)+xlab("Time (h)")+
+         geom_line(size=1.2)+colScale+
+          theme_pander(18)+xlab("Time (h)")+
          ylab("")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-        scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
-         scale_color_discrete(name="")
-  )
+        scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
+        )}
+        
+  if(nrow(plotdata)<1)
+    {
+    print(ggplot() + 
+      annotate("text", 
+               x = 4, y = 25, size=8, color="darkgrey",
+        label = "There is no data available for this day 
+        and pollutant combination. \nPlease select again.") + 
+      theme_bw() +
+      theme(panel.grid.major=element_blank(),
+            panel.grid.minor=element_blank())+
+        theme(line = element_blank(),
+              text = element_blank(),
+              title = element_blank())
+    )
+  }
+  
+          
+  if(!varvalue%in%c("CO")&nrow(plotdata)>0){
+    
+   print(ggplot(data=plotdata,
+                 aes_string("hour",varvalue, color="site")) +
+          geom_line(size=1.2)+theme_pander(18)+xlab("Time (h)")+
+          ylab("")+
+          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
+          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
+          scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
+           #add to include donovan APCD data
+          # geom_line(aes(eval(as.name("hour")), 
+          #               eval(as.name(paste0(varvalue, "_donovan"))),
+          #                color="Donovan Regulatory"), size=1.2)+
+           scale_color_manual(name="", values = c(myColors, 
+                                                  "Donovan Regulatory"="black"))
+         
+   )}
+  
+  
  })
 
  
@@ -95,30 +154,19 @@ shinyServer(function(input, output, session) {
   #  #colorData <- zipdata[[colorBy]]
   
   
-  data_summary<-data_wide[date_day%in%as.character(input$date),
-                          lapply(.SD, FUN = function (x)
-   mean(as.numeric(as.character(x)), na.rm=T)), 
-   .SDcols=c("longitude","latitude",
-             c("pm25","CO","NO","NO2","O3")),
-   by="site_short"]
-  missing_sites<-
-   site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
-  missing_sites<-site_locations[site_short%in%missing_sites]
-  missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
-  data_summary<-rbindlist(list(data_summary,missing_sites),fill=T)
+  data_summ <- data_summary()
   
   
-  if(nrow(data_summary)>1){
+  if(nrow(data_summ)>1){
    
-   colorData <- data_summary[[colorBy]]
-   palette_rev <- rev(brewer.pal(5, "YlGnBu"))
-   pal <- colorBin(palette_rev, signif(colorData,2), 5,pretty=F)}
+   colorData <- data_summ[[colorBy]]
+   }
   
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <- rev(brewer.pal(5, "YlGnBu"))
-   pal2 <- colorBin(palette_rev2, signif(colorData2,2), 5,pretty=F)}
+   palette_rev2 <- brewer.pal(5, "Oranges")
+   pal2 <- colorBin(palette_rev2,c(0,quantile(data()[,colorBy, by=date_day,with=F], na.rm=T, .99)), 6, pretty=T)}
   
   #}
   
@@ -130,35 +178,61 @@ shinyServer(function(input, output, session) {
   #}
   #radius<-data_summary[[sizeBy]]/ max(data_summary[[sizeBy]],na.rm=T) * 500
   
+  legend.values<-c("pm25"="Particle Mass PM2.5 (ug/m3)",
+                   "O3"="Ozone (ppb)",
+                   "NO2"="Nitrogen Dioxide (ppb)",
+                   "NO" = "Nitrogen Oxide (ppb)",
+                   "CO" = "Carbon Monoxide (ppm)")
+  
   if(!is.null(colorData)){
-  leafletProxy("map", data = data_summary) %>% #data = zipdata) %>%
+  leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
    addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
-              stroke=FALSE, fillOpacity=0.8, fillColor=pal(colorData)) %>%
-   addLegend("topleft", pal=pal2, values=colorData, title=colorBy,
+              stroke=FALSE, fillOpacity=0.8, fillColor=pal2(colorData)) %>%
+   addLegend("topleft", pal=pal2, values=colorData, title=as.character(legend.values[colorBy]),
              layerId="colorLegend",na.label = "No Data")
    }  else {
-    leafletProxy("map", data = site_locations) %>% #data = zipdata) %>%
+    leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
-     addCircleMarkers(~longitude, ~latitude, radius= 8, layerId = ~site_short, 
+       addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
                       stroke=FALSE, fillOpacity=0.8, fillColor="grey") %>%
-     addLegend("topleft", values=NA, title=colorBy,
+     addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
                layerId="colorLegend")}
     
  })
  
  # Show a popup at the given location
  showSitecodePopup <- function(id) {
+   
+   legend.values<-c("pm25"="PM2.5",
+                    "O3"="Ozone",
+                    "NO2"="Nitrogen Dioxide",
+                    "NO" = "Nitrogen Oxide",
+                    "CO" = "Carbon Monoxide")
+   units.legend<-c("pm25"="ug/m3",
+            "O3"="ppb",
+            "NO2"="ppb",
+            "NO" ="ppb",
+            "CO" = "ppm")
   
-  site<-site_locations[id,]$site_short
-  selectedSite <- data_summary[site_short%in%site,]
+  selectedSite <- data_summary()[site_short%in%id,]
+ 
   content <- as.character(tagList(
    #tags$h4("Mean:", round(selectedSite$pm25,2)),
    tags$strong(HTML(sprintf("%s",
-                            site_locations
-                            [site_short==selectedSite$site_short,]$site))), tags$br(),
-   sprintf("Mean PM2.5 %s", round(selectedSite$pm25)) , tags$br(),
-   sprintf("Mean CO %s", round(selectedSite$CO)), tags$br()
+                            site_locations[site_short==selectedSite$site_short,]$site))), tags$br(),
+   
+   sprintf(
+     if(!is.na(round(selectedSite[,input$color,with=F])))
+       {
+     paste("Daily Mean of", as.character(legend.values[input$color]),":",
+           round(selectedSite[,input$color,with=F],1), 
+           as.character(units.legend[input$color]))
+      } else {
+     "No data"}), 
+   tags$br(),
+   tags$a(href="https://www.epa.gov/criteria-air-pollutants#self",
+          tags$em("Understanding more about Criteria Pollutants"))
   ))
   leafletProxy("map") %>% addPopups(selectedSite$longitude, selectedSite$latitude, 
                                     content, layerId = id)
@@ -167,7 +241,7 @@ shinyServer(function(input, output, session) {
  # When map is clicked, show a popup with city info
  observe({
   leafletProxy("map") %>% clearPopups()
-  event <- input$map_shape_click
+  event <- input$map_marker_click
   if (is.null(event))
    return()
 
