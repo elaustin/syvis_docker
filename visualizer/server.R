@@ -165,7 +165,7 @@ shinyServer(function(input, output, session) {
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <-brewer.pal(n = 9, "YlOrRd")[3:8]
+   palette_rev2 <-rev(brewer.pal(n = 9, "RdYlGn")[1:7])
    pal2 <- colorBin(palette_rev2,c(0,
                                    quantile(data()[,colorBy, 
                                                    by=date_day,with=F], 
