@@ -165,12 +165,11 @@ shinyServer(function(input, output, session) {
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <-c('#dadaeb','#bcbddc',
-                    '#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d')
+   palette_rev2 <-brewer.pal(n = 9, "YlOrRd")[3:8]
    pal2 <- colorBin(palette_rev2,c(0,
                                    quantile(data()[,colorBy, 
                                                    by=date_day,with=F], 
-                                            na.rm=T, .996)), 6, pretty=T)}
+                                            na.rm=T, .996)), 6, pretty=T, na.color ="lightgrey")}
   
   #}
   
@@ -191,17 +190,19 @@ shinyServer(function(input, output, session) {
   if(!is.null(colorData)){
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
-   addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
-              stroke=FALSE, fillOpacity=1, fillColor=pal2(colorData)) %>%
+   addCircleMarkers(~longitude, ~latitude, radius= 11, layerId = ~site_short, 
+              stroke=T, color="black",weight=2, opacity=.8,
+              fillOpacity=1, fillColor=pal2(colorData)) %>%
    addLegend("topleft", pal=pal2, values=colorData, title=as.character(legend.values[colorBy]),
-             layerId="colorLegend",na.label = "No Data")
+             layerId="colorLegend",na.label = "No Data", opacity=0.8)
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
-       addCircleMarkers(~longitude, ~latitude, radius= 10, layerId = ~site_short, 
-                      stroke=FALSE, fillOpacity=1, fillColor="grey") %>%
+       addCircleMarkers(~longitude, ~latitude, radius= 11, layerId = ~site_short, 
+                      stroke=T, , color="black",weight=2, opacity=.8,
+                      fillOpacity=1, fillColor="grey") %>%
      addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
-               layerId="colorLegend")}
+               layerId="colorLegend", opacity=0.8)}
     
  })
  
