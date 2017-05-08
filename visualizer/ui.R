@@ -130,7 +130,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
             conditionalPanel(
               "input.sites", #"input.states",
               dateInput("startdate", label = ("Start Date"), 
-                        value = input$date))),
+                        value = max(data_wide$date_day, na.rm=T)))),
      column(3,
             conditionalPanel(
               "input.sites", #"input.states",
