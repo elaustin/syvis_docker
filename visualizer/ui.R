@@ -66,54 +66,6 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    )
   )
  ),
-
- tabPanel(
-  "Data explorer",
-  fluidRow(
-   column(3,
-          selectInput(
-           "sites",#"states",
-           "Sites",#"States",
-           c("All Sites"="", site_locations$site), multiple=TRUE)
-          ),
-   column(3,
-          conditionalPanel(
-           "input.sites", #"input.states",
-           selectInput("pollutants", "Pollutants", c("All Pollutants" =
-           #selectInput("cities", "Cities", c("All cities" =
-                                              ""), multiple = TRUE)
-          ))
-   # column(3,
-   #        conditionalPanel(
-   #         "input.states",
-   #         selectInput("zipcodes", "Zipcodes", c("All zipcodes" =
-   #                                                ""), multiple = TRUE)
-   #        ))
-  ),
-  # fluidRow(column(
-  #  1,
-  #  numericInput(
-  #   "minScore",
-  #   "Min score",
-  #   min = 0,
-  #   max = 100,
-  #   value = 0
-  #  )
-  # ),
-  # column(
-  #  1,
-  #  numericInput(
-  #   "maxScore",
-  #   "Max score",
-  #   min = 0,
-  #   max = 100,
-  #   value = 100
-  #  )
-  # )),
-  hr(),
-  DT::dataTableOutput("sitetable")
- ),
-
   tabPanel("Hourly Data",
            # absolutePanel(
            #  id = "controls",
@@ -162,6 +114,59 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
           #   selectInput("tsvars", "Pollutant:", vars, selected="pm25"),
           # plotOutput("tsPoll", height = 600) #plotOutput("scatterCollegeIncome", height = 250)
  #)
+ ),
+ 
+ 
+ tabPanel(
+   "Data explorer",
+   fluidRow(
+     column(3,
+            selectInput(
+              "sites",#"states",
+              "Sites",#"States",
+              c("All Sites"="", site_locations$site), multiple=TRUE)
+     ),
+     column(3,
+            conditionalPanel(
+              "input.sites", #"input.states",
+              dateInput("startdate", label = ("Start Date"), 
+                        value = input$date))),
+     column(3,
+            conditionalPanel(
+              "input.sites", #"input.states",
+              selectInput("pollutants", "Pollutants", c("All Pollutants" =
+                                                          #selectInput("cities", "Cities", c("All cities" =
+                                                          ""), multiple = TRUE)
+            ))
+     # column(3,
+     #        conditionalPanel(
+     #         "input.states",
+     #         selectInput("zipcodes", "Zipcodes", c("All zipcodes" =
+     #                                                ""), multiple = TRUE)
+     #        ))
+   ),
+   # fluidRow(column(
+   #  1,
+   #  numericInput(
+   #   "minScore",
+   #   "Min score",
+   #   min = 0,
+   #   max = 100,
+   #   value = 0
+   #  )
+   # ),
+   # column(
+   #  1,
+   #  numericInput(
+   #   "maxScore",
+   #   "Max score",
+   #   min = 0,
+   #   max = 100,
+   #   value = 100
+   #  )
+   # )),
+   hr(),
+   DT::dataTableOutput("sitetable")
  ),
  
  conditionalPanel("false", icon("crosshair"))

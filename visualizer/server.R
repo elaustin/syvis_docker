@@ -284,19 +284,31 @@ shinyServer(function(input, output, session) {
  })
 
  output$sitetable <- DT::renderDataTable({
-  df<-data_wide[site%in%input$sites, 
+  df<-data_wide[site%in%input$sites & datetime>=as.POSIXct(input$startdate) , 
                 c("datetime","site","longitude", "latitude", input$pollutants),
                 with=F]
+
+  
   df[,datetime:=as.POSIXct(datetime, origin="1970-01-01")]
+  
+  setnames(df, c("datetime","site", "longitude","latitude"), 
+           c("Date","Site Name","Longitude","Latitude"))
+  if(!is.null(input$pollutants)){
+  df[,(input$pollutants):= lapply(.SD, signif,2), .SDcols=input$pollutants]}
+  if(!is.null(input$sites)){
+    df[,(c("Longitude","Latitude")):= lapply(.SD, round,4), .SDcols=c("Longitude","Latitude")]
+               }
+  
   
  
   
-  df <- df  %>%
-   mutate(Action = paste('<a class="go-map" href="" data-lat="', latitude, '" data-long="', longitude, '" data-id="',
-                         site, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
-  action <- DT::dataTableAjax(session, df)
+  # df <- df  %>%
+  #  mutate(Action = paste('<a class="go-map" href="" data-lat="', latitude, '" data-long="', longitude, '" data-id="',
+  #                        site, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
+  # action <- DT::dataTableAjax(session, df)
 
-  DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+ # DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+  DT::datatable(df)
  })
 })
 
