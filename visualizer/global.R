@@ -17,7 +17,7 @@ site_locations<-site_locations[!is.na(longitude)]
 # data_wide<-data.table(dbGetQuery(db.SYdata, sqlcmd))
 # data_wide[,CO:=CO*1000]
 
-data_wide<-fread("http://staff.washington.edu/elaustin/hourly_qa_calibrated_data_04_10_2017.csv")
+data_wide<-fread("http://staff.washington.edu/elaustin/hourly_qa_calibrated_data.csv")
 data_wide[,datetime:=as.POSIXct(datetime)]
 data_wide[,date_day:=format(datetime, "%Y-%m-%d")]
 
