@@ -14,7 +14,8 @@ vars <- c(
 
 
 shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
- tabPanel("Interactive map",
+                   
+ tabPanel("Map",
   div(class = "outer",
    
    tags$head(
@@ -105,7 +106,15 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
              ),
              mainPanel(
                
-               plotOutput("tsPoll", height = 400) #plotOutput("scatterCollegeIncome", height = 250)
+               plotOutput("tsPoll", height = 400), #plotOutput("scatterCollegeIncome", height = 250)
+               tags$hr(),
+               strong("The data presented here is NOT regulatory data and errors may exist."),
+               strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
+                        "Please follow current outdoor conditions and health recommendations from 
+                                the San Diego County APCD.")),
+               tags$hr(), 
+               p(tags$em("Interpreting this data with respect to EPA health based standards:")),
+               tags$p(textOutput("tsNotation"))
              )
            )
           #   h2("Hourly Data Plot"), 

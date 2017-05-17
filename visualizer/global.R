@@ -1,3 +1,5 @@
+rm(list = ls())
+
 library(data.table)
 #library(measurements)
 #library(RSQLite)

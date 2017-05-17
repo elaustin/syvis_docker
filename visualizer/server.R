@@ -64,7 +64,6 @@ shinyServer(function(input, output, session) {
  #  bounds <- input$map_bounds
  #  latRng <- range(bounds$north, bounds$south)
  #  lngRng <- range(bounds$east, bounds$west)
- #  
  #  subset(data_wide,
  #         latitude >= latRng[1] & latitude <= latRng[2] &
  #          longitude >= lngRng[1] & longitude <= lngRng[2] &
@@ -72,6 +71,78 @@ shinyServer(function(input, output, session) {
  # })
  # 
 
+ output$tsNotation <- renderText({
+   NAAQS24hr<-c("pm25"=35,
+                    "O3"=70,
+                    "NO2"=100,
+                    "NO" = NA,
+                    "CO" = 9)
+   
+   varvalue<-input$tsvars
+   scaleby<-ifelse(input$tsvars=="CO",0.5,10)
+   plotdata=data()[date_day%in%as.character(input$date1)]
+   plotdata[,hour:=hour(plotdata$datetime)]
+   plotdata[,site:=factor(site, levels=unique(site_locations$site))]
+   
+   labels<-c("pm25"="particle mass (PM2.5)",
+             "O3"="Ozone",
+             "NO2"="Nitrogen Dioxide",
+             "NO" = "Nitrogen Oxide",
+             "CO" = "Carbon Monoxide")
+   
+   if(varvalue%in%c("NO2")) {
+   
+   print(
+     
+     if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0) {
+          paste("For these sites, on this day, there are hours when",
+                labels[varvalue],
+                "mesured by this sensor network", 
+                "exceeds the 1-hour NAAQS standard set by the EPA.")
+   } else {
+          paste("For these sites, on this day, there are no hours of",
+                labels[varvalue], 
+                "mesured by this sensor network that exceed the 1-hour NAAQS standard set by the EPA.")
+   }
+   )} 
+   
+   if(varvalue%in%c("CO","O3")){
+     
+     print(
+       if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0)
+     {
+       paste("For these sites, on this day, there are hours when",
+             labels[varvalue],
+             "mesured by this sensor network", 
+             "exceeds the 8-hour NAAQS standard set by the EPA.")
+     }     else {
+       paste("For these sites, on this day, there are no hours of",
+             labels[varvalue], 
+             "mesured by this sensor network that exceed the 8-hour NAAQS standard set by the EPA.")}
+     )
+   }
+   
+   if(varvalue%in%c("pm25")){
+     
+     print(
+       if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0)
+       {
+         paste("For these sites, on this day, there are hours when",
+               labels[varvalue],
+               "mesured by this sensor network", 
+               "exceeds the 24-hour NAAQS standard set by the EPA.")
+       }     else {
+         paste("For these sites, on this day, there are no hours of",
+               labels[varvalue], 
+               "mesured by this sensor network that exceed the 24-hour NAAQS standard set by the EPA.")}
+     )
+   }
+   
+ })
+   
+   
+   
+ 
  output$tsPoll <- renderPlot({
   # If no zipcodes are in view, don't plot
    #fix selecting sites!!!!
@@ -82,18 +153,32 @@ shinyServer(function(input, output, session) {
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
  
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
+  maxvalnumbers<-c("pm25"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
+                   "O3"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
+                   "NO2"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
+                   "NO" = max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
+                   "CO" = max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),1))
+    
+    
   maxval<-quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995)
   
   myColors <- brewer.pal(nrow(site_locations),"Paired")
   names(myColors) <- levels(as.factor(site_locations$site))
   colScale <- scale_color_manual(name = "",values = myColors)
   
+  ylab.values<-c("pm25"="Particle Mass PM2.5 (ug/m3)",
+                   "O3"="Ozone (ppb)",
+                   "NO2"="Nitrogen Dioxide (ppb)",
+                   "NO" = "Nitrogen Oxide (ppb)",
+                   "CO" = "Carbon Monoxide (ppm)")
+  
+ 
   if(varvalue%in%c("CO") & nrow(plotdata)>0){
   print(ggplot(data=plotdata,
                aes_string("hour",varvalue, color="site")) +
          geom_line(size=1.2)+colScale+
           theme_pander(18)+xlab("Time (h)")+
-         ylab("")+
+         ylab("Carbon Monoxide (ppm)")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
@@ -115,25 +200,23 @@ shinyServer(function(input, output, session) {
     )
   }
   
-          
   if(!varvalue%in%c("CO")&nrow(plotdata)>0){
     
    print(ggplot(data=plotdata,
                  aes_string("hour",varvalue, color="site")) +
           geom_line(size=1.2)+theme_pander(18)+xlab("Time (h)")+
-          ylab("")+
+          ylab(ylab.values[varvalue])+
           guides(label="",colour = guide_legend(override.aes = list(size=3)))+
           guides(fill=guide_legend(nrow=2,byrow=TRUE))+
           scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
            #add to include donovan APCD data
-          # geom_line(aes(eval(as.name("hour")), 
-          #               eval(as.name(paste0(varvalue, "_donovan"))),
-          #                color="Donovan Regulatory"), size=1.2)+
+           #geom_line(aes(eval(as.name("hour")), 
+           #              eval(as.name(paste0(varvalue, "_donovan"))),
+           #               color="Donovan Regulatory"), size=1.2)+
            scale_color_manual(name="", values = c(myColors, 
                                                   "Donovan Regulatory"="black"))
          
    )}
-  
   
  })
 
@@ -187,18 +270,36 @@ shinyServer(function(input, output, session) {
                    "NO" = "Nitrogen Oxide (ppb)",
                    "CO" = "Carbon Monoxide (ppm)")
   
+  label.units<-c("pm25"="ug/m3",
+                 "O3"="ppb",
+                 "NO2"="ppb",
+                 "NO" = "ppb",
+                 "CO" = "ppm")
+  
+  label.vals<-colorData
+  label.vals<-as.character(paste(signif(label.vals,3), 
+                                 label.units[colorBy]))
+  
+  label.vals[!is.finite(colorData)]="No Data"
+  
   if(!is.null(colorData)){
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
    addCircleMarkers(~longitude, ~latitude, radius= 11, layerId = ~site_short, 
               stroke=T, color="black",weight=2, opacity=.8,
-              fillOpacity=1, fillColor=pal2(colorData)) %>%
+              fillOpacity=1, 
+              fillColor=pal2(colorData), 
+              #label=~label.vals,
+              #labelOptions = labelOptions(noHide = F, 
+              #                            direction="auto")
+   ) %>%
    addLegend("topleft", pal=pal2, values=colorData, title=as.character(legend.values[colorBy]),
              layerId="colorLegend",na.label = "No Data", opacity=0.8)
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
-       addCircleMarkers(~longitude, ~latitude, radius= 11, layerId = ~site_short, 
+       addCircleMarkers(~longitude, ~latitude, radius= 11, 
+                        layerId = ~site_short, 
                       stroke=T, , color="black",weight=2, opacity=.8,
                       fillOpacity=1, fillColor="grey") %>%
      addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
@@ -235,9 +336,9 @@ shinyServer(function(input, output, session) {
            as.character(units.legend[input$color]))
       } else {
      "No data"}), 
-   tags$br(),
+   tags$hr(),
    tags$a(href="https://www.epa.gov/criteria-air-pollutants#self",
-          tags$em("Understanding more about Criteria Pollutants"))
+          tags$em("For more information about Criteria Pollutants"))
   ))
   leafletProxy("map") %>% addPopups(selectedSite$longitude, selectedSite$latitude, 
                                     content, layerId = id)
