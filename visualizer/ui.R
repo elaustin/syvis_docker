@@ -14,9 +14,11 @@ vars <- c(
 
 
 shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
+                   theme = "bootstrap.css",
                    
- tabPanel("Map",
+ tabPanel(strong("Map"),
   div(class = "outer",
+      
    
    tags$head(
     # Include our custom CSS
@@ -67,7 +69,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    )
   )
  ),
-  tabPanel("Hourly Data",
+  tabPanel(strong("Hourly Data"),
            # absolutePanel(
            #  id = "controls",
            #  class = "panel panel-default",
@@ -127,7 +129,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  
  
  tabPanel(
-   "Data explorer",
+   strong("Data explorer"),
    fluidRow(
      column(3,
             selectInput(
