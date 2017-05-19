@@ -31,7 +31,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    
    absolutePanel(
      id = "controls", class = "panel panel-default", fixed = TRUE,
-     draggable = TRUE, bottom = 10, left = "auto", right = 10, top = "auto",
+     draggable = TRUE, bottom = 20, left = "auto", right = 10, top = "auto",
      width = 310, height = "auto",
      HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
      tags$div(id = 'demo',  class="collapse in",
@@ -58,7 +58,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    absolutePanel(
     id = "cite", 
     class = "panel panel-default", fixed = TRUE,
-    draggable = TRUE, bottom = 10, left = 10, right = "auto", top = "auto",
+    draggable = TRUE, bottom = 20, left = 10, right = "auto", top = "auto",
     width = "auto", height = "auto",
     tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
     'Data compiled for the ',
