@@ -29,6 +29,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    
    leafletOutput("map", width = "100%", height ="100%"),
    
+   absolutePanel(
+     id = "controls", class = "panel panel-default", fixed = TRUE,
+     draggable = TRUE, bottom = 10, left = "auto", right = 10, top = "auto",
+     width = 310, height = "auto",
+     HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
+     tags$div(id = 'demo',  class="collapse in",
+              htmlOutput('poldesc'))),
+   
    # Shiny versions prior to 0.11 should use class="modal" instead.
    absolutePanel(
     id = "controls",
@@ -42,30 +50,26 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     width = 330,
     height = "auto",
     
-    h2("San Ysidro Air Explorer"), #h2("ZIP explorer"),
-    
-    dateInput("date", label = h3("Date input"), value = max(data_wide$date_day, na.rm=T)),
-    
-    
-    selectInput("color", "Color", vars, selected="pm25")),
-    #selectInput("size", "Size", vars, selected = "pm25"),
-    # conditionalPanel(
-    #  "input.color == 'superzip' || input.size == 'superzip'",
-    #  # Only prompt for threshold when coloring or sizing by superzip
-    #  numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-    # ),
-    
-   
-   
-   tags$div(
-    id = "cite",
+    h3("San Ysidro Air Explorer"), 
+    dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T)),
+    selectInput("color", h4("Pollutant"), vars, selected="pm25")
+    ),
+  
+   absolutePanel(
+    id = "cite", 
+    class = "panel panel-default", fixed = TRUE,
+    draggable = TRUE, bottom = 10, left = 10, right = "auto", top = "auto",
+    width = "auto", height = "auto",
     tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
     'Data compiled for the ',
     tags$a(href="http://deohs.washington.edu/syairstudy",
-           tags$em('San Ysidro Community Air Monitoring Data Project')),tags$br(),
-    "Principle Investigator: Edmund Seto at University of Washington", tags$br(),"Funded by the ", 
+           tags$em('San Ysidro Community Air Monitoring Data Project')),
+    tags$br(),
+    tags$a(href="http://deohs.washington.edu/faculty/seto_edmund",
+           "Principle Investigator: Edmund Seto at University of Washington"),
+    tags$br(),"Funded by the ", 
     tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)"),
-    tags$br(),"Created by Elena Austin"
+    tags$br(),"Created by Elena Austin at University of Washington"
    )
   )
  ),
@@ -115,7 +119,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                         "Please follow current outdoor conditions and health recommendations from 
                                 the San Diego County APCD.")),
                tags$hr(), 
-               p(tags$em("Interpreting this data with respect to EPA health based standards:")),
+               p(tags$strong("Interpreting this data with respect to government health based standards:")),
                tags$p(textOutput("tsNotation"))
              )
            )

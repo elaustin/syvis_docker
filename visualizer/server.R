@@ -70,16 +70,108 @@ shinyServer(function(input, output, session) {
  #          date_day%in%as.character(input$date))
  # })
  # 
+  
+output$pollDescrip <- reactive({
+  varvalue<-input$tsvars
+  if(varvalue%in%"pm25"){
+    print("This is a test pm25")
+  } else if(varvalue%in%"O3"){
+      print("This is a test O3")
+  } else if(varvalue%in%"NO2"){
+    print("This is a test NO2")
+  } else "Nothing"
+  
+})
 
+
+output$poldesc<- renderText({
+    if(input$color=="O3"){
+      print(paste(tags$p("Ozone is the main ingredient of smog. At ground level, ozone is formed when pollutants chemically react in the presence of sunlight. The main sources of ozone are trucks, cars, planes, trains, factories, farms, construction, and dry cleaners."),
+                  tags$p("Ozone can irritate the lungs, cause inflammation, and make chronic illnesses worse, even at low levels of exposure. Children and the elderly are sensitive to the effects of ozone. Ozone levels are highest in the afternoon and on hot days People who spend a lot of time outdoors may also be affected by ozone."),
+                  tags$a(href="https://www.epa.gov/ozone-pollution",
+                         tags$em("For more information about Ozone see the EPA website."))
+                  
+      ))
+    } else if (input$color=="pm25") 
+    {print(paste0(
+      tags$p(),
+      "Particulate matter or PM",
+      tags$sub(2.5), 
+      " is very small airborne particle pollution (less than 2.5 micrometers), which is less than the thickness of a human hair. PM",
+      tags$sub(2.5),
+      " is a mixture of particles that can include organic chemicals, dust, soot and metals. These particles can come from cars and trucks, factories, wood burning, and other activities. They can travel deep into the lungs and cause various health problems including heart and lung disease because they are so small.",
+      tags$p(),
+      "Children, the elderly, and people suffering from heart or lung disease, asthma, or chronic illness are most sensitive to the effects of PM2.5 exposure.",
+      tags$br(),
+      tags$a(href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics#PM",                        tags$em(paste0("For more information about PM see the EPA website.")))
+    )
+    )
+    } else if (input$color == "NO2")
+    {print(paste0(
+      tags$p(),
+      "Nitrogen Dioxide (NO",
+      tags$sub(2), 
+      ")  is one of a group of highly reactive gases known as 
+      oxides of nitrogen or nitrogen oxides (NO",
+      tags$sub("x"),
+      "). Other nitrogen oxides include nitrous acid and nitric acid. NO",
+      tags$sub(2),
+      " is used as the indicator for the larger group of nitrogen oxides.",
+      tags$p(),
+      "NO",
+      tags$sub(2),
+      " primarily gets in the air from the burning of fuel. NO",
+      tags$sub(2),
+      " forms from emissions from cars, trucks and buses, power plants, and off-road equipment.",
+      tags$p(),
+      "People with asthma, as well as children and the elderly are generally at greater risk for  the health effects of NO",
+      tags$sub(2),".",
+      tags$br(),
+      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Dioxide see the EPA website.")))
+    )
+    )
+    } else if (input$color == "NO")
+    {print(paste0(
+      tags$p(),
+      "Nitrogen Oxide (NO) is one of a group of highly reactive gases known as 
+  oxides of nitrogen or nitrogen oxides (NO",
+      tags$sub("x"),
+      "). Other nitrogen oxides include nitrous acid and nitric acid. NO",
+      tags$sub(2),
+      " is used by calEPA as the indicator for the larger group of nitrogen oxides.",
+      tags$p(),
+      "NO is a colourless gass and a major component of diesel exhaust.",
+      tags$p(),
+      "People with asthma, as well as children and the elderly are generally at greater risk for  the health effects of NO.",
+      tags$br(),
+      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Oxide see the EPA website.")))
+    )
+    )
+    } else if (input$color == "CO")
+    {print(paste0(
+      tags$p(),
+      "Carbon Monoxide (CO) is a colorless, odorless gas that can be harmful when 
+  inhaled in large amounts. CO is released when something is burned. The greatest sources of CO to outdoor air are cars, trucks and other vehicles or machinery that burn fossil fuels.",
+      tags$p(),
+      "Very high levels of CO are not likely to occur outdoors. However, when CO levels are elevated outdoors, they can be of particular concern for people with some types of heart disease. These people already have a reduced ability for getting oxygenated blood to their hearts in situations where the heart needs more oxygen than usual.",
+      tags$p(),
+      tags$br(),
+      tags$a(href="https://www.epa.gov/co-pollution/basic-information-about-carbon-monoxide-co-outdoor-air-pollution#What is CO",                        
+             tags$em(paste0("For more information about Carbon Monoxide see the EPA website.")))
+    )
+    )
+    }
+  
+})
  output$tsNotation <- renderText({
-   NAAQS24hr<-c("pm25"=35,
-                    "O3"=70,
+   CAAQS24hr<-c("pm25"=35,
+                    "O3"=90,
                     "NO2"=100,
                     "NO" = NA,
                     "CO" = 9)
    
    varvalue<-input$tsvars
-   scaleby<-ifelse(input$tsvars=="CO",0.5,10)
+   scaleby<-ifelse(varvalue=="CO",0.5,10)
    plotdata=data()[date_day%in%as.character(input$date1)]
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
@@ -89,52 +181,69 @@ shinyServer(function(input, output, session) {
              "NO2"="Nitrogen Dioxide",
              "NO" = "Nitrogen Oxide",
              "CO" = "Carbon Monoxide")
-   
-   if(varvalue%in%c("NO2")) {
+   if (sum(is.na(plotdata[,varvalue, with=F]))==nrow(plotdata)) {
+     
+     return(print("There is no data."))
+     
+   }
+     
+   if(varvalue%in%c("O3")) {
    
    print(
      
-     if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0) {
+     if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
           paste("For these sites, on this day, there are hours when",
                 labels[varvalue],
                 "mesured by this sensor network", 
-                "exceeds the 1-hour NAAQS standard set by the EPA.")
-   } else {
+                "exceeds the 1-hour CAAQS standard of 90 ppb set by the calEPA.")
+   } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
           paste("For these sites, on this day, there are no hours of",
                 labels[varvalue], 
-                "mesured by this sensor network that exceed the 1-hour NAAQS standard set by the EPA.")
-   }
-   )} 
+                "mesured by this sensor network that exceed the 1-hour CAAQS standard of 90 ppb set by the calEPA.")
+     })}   
    
-   if(varvalue%in%c("CO","O3")){
+   else if (varvalue%in%c("NO")) {print("There is no health based recommendation for this pollutant.")
+   } else if(varvalue%in%c("NO2")) {
      
      print(
-       if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0)
+       
+       if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
+         paste("For these sites, on this day, there are hours when",
+               labels[varvalue],
+               "mesured by this sensor network", 
+               "exceeds the 1-hour NAAQS standard of 100 ppb set by the EPA.")
+       } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
+         paste("For these sites, on this day, there are no hours of",
+               labels[varvalue], 
+               "mesured by this sensor network that exceed the 1-hour NAAQS standard of 100 ppb set by the EPA.")
+       } else {paste("There is no data.")}
+   )} else if(varvalue%in%c("CO")) {
+     
+     print(
+       if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0)
      {
        paste("For these sites, on this day, there are hours when",
              labels[varvalue],
              "mesured by this sensor network", 
-             "exceeds the 8-hour NAAQS standard set by the EPA.")
-     }     else {
+             "exceeds the 8-hour NAAQS standard of 9 ppm set by the EPA.")
+     }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
        paste("For these sites, on this day, there are no hours of",
              labels[varvalue], 
-             "mesured by this sensor network that exceed the 8-hour NAAQS standard set by the EPA.")}
-     )
-   }
-   
-   if(varvalue%in%c("pm25")){
-     
+             "mesured by this sensor network that exceed the 8-hour NAAQS standard of 9 ppm set by the EPA.")
+       } else {paste("There is no data.")} )
+   } else if(varvalue%in%c("pm25")){
      print(
-       if(sum(plotdata[,varvalue, with=F]>=NAAQS24hr[varvalue], na.rm=T)>0)
+       if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0)
        {
          paste("For these sites, on this day, there are hours when",
                labels[varvalue],
                "mesured by this sensor network", 
-               "exceeds the 24-hour NAAQS standard set by the EPA.")
-       }     else {
+               "exceeds the 24-hour NAAQS standard of 35 ug/m3 set by the EPA.")
+       }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
          paste("For these sites, on this day, there are no hours of",
                labels[varvalue], 
-               "mesured by this sensor network that exceed the 24-hour NAAQS standard set by the EPA.")}
+               "mesured by this sensor network that exceed the 24-hour NAAQS standard of 35 ug/m3 set by the EPA.")
+         }   else {paste("There is no data.")}
      )
    }
    
@@ -176,9 +285,15 @@ shinyServer(function(input, output, session) {
   if(varvalue%in%c("CO") & nrow(plotdata)>0){
   print(ggplot(data=plotdata,
                aes_string("hour",varvalue, color="site")) +
+          scale_x_continuous(limits=c(0,24),
+                             breaks=0:11*2,
+                             labels=c("12 am",paste(1:5*2,"am"),
+                                      "12 pm",
+                                      paste(7:11*2-12,"pm"))) +
+          theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
          geom_line(size=1.2)+colScale+
           theme_pander(18)+xlab("Time (h)")+
-         ylab("Carbon Monoxide (ppm)")+
+         ylab("Carbon Monoxide (ppm)")+xlim(0,23)+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
@@ -204,7 +319,13 @@ shinyServer(function(input, output, session) {
     
    print(ggplot(data=plotdata,
                  aes_string("hour",varvalue, color="site")) +
-          geom_line(size=1.2)+theme_pander(18)+xlab("Time (h)")+
+          geom_line(size=1.2)+theme_pander(18)+xlab("")+
+           scale_x_continuous(limits=c(0,24),
+                              breaks=0:11*2,
+                              labels=c("12 am",paste(1:5*2,"am"),
+                                       "12 pm",
+                                       paste(7:11*2-12,"pm"))) +
+           theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
           ylab(ylab.values[varvalue])+
           guides(label="",colour = guide_legend(override.aes = list(size=3)))+
           guides(fill=guide_legend(nrow=2,byrow=TRUE))+
@@ -264,7 +385,10 @@ shinyServer(function(input, output, session) {
   #}
   #radius<-data_summary[[sizeBy]]/ max(data_summary[[sizeBy]],na.rm=T) * 500
   
-  legend.values<-c("pm25"="Particle Mass PM2.5 (ug/m3)",
+  legend.values<-c("pm25"=paste0("Particulate Matter - PM",
+                                 tags$sub(2.5),
+                                 " (<span>&#181;</span>","g/m",tags$sup(3),
+                                 ")"),
                    "O3"="Ozone (ppb)",
                    "NO2"="Nitrogen Dioxide (ppb)",
                    "NO" = "Nitrogen Oxide (ppb)",
@@ -282,6 +406,7 @@ shinyServer(function(input, output, session) {
   
   label.vals[!is.finite(colorData)]="No Data"
   
+  
   if(!is.null(colorData)){
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
@@ -293,52 +418,53 @@ shinyServer(function(input, output, session) {
               #labelOptions = labelOptions(noHide = F, 
               #                            direction="auto")
    ) %>%
-   addLegend("topleft", pal=pal2, values=colorData, title=as.character(legend.values[colorBy]),
-             layerId="colorLegend",na.label = "No Data", opacity=0.8)
+   addLegend(className = "panel panel-default legend",
+             "topleft", pal=pal2, values=colorData, title=HTML(legend.values[colorBy]),
+             layerId="colorLegend",na.label = "No Data", opacity=0.8) 
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
        addCircleMarkers(~longitude, ~latitude, radius= 11, 
                         layerId = ~site_short, 
-                      stroke=T, , color="black",weight=2, opacity=.8,
+                      stroke=T, color="black",weight=2, opacity=.8,
                       fillOpacity=1, fillColor="grey") %>%
      addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
-               layerId="colorLegend", opacity=0.8)}
+               layerId="colorLegend", opacity=0.8)
+     
+     }
     
  })
  
  # Show a popup at the given location
  showSitecodePopup <- function(id) {
    
-   legend.values<-c("pm25"="PM2.5",
+   legend.values<-c("pm25"=paste0("PM",tags$sub(2.5)),
                     "O3"="Ozone",
                     "NO2"="Nitrogen Dioxide",
                     "NO" = "Nitrogen Oxide",
                     "CO" = "Carbon Monoxide")
-   units.legend<-c("pm25"="ug/m3",
+   units.legend<-c("pm25"=paste0("<span>&#181;</span>","g/m",tags$sup(3)),
             "O3"="ppb",
             "NO2"="ppb",
             "NO" ="ppb",
             "CO" = "ppm")
   
   selectedSite <- data_summary()[site_short%in%id,]
- 
+  
+  
   content <- as.character(tagList(
    #tags$h4("Mean:", round(selectedSite$pm25,2)),
    tags$strong(HTML(sprintf("%s",
-                            site_locations[site_short==selectedSite$site_short,]$site))), tags$br(),
-   
-   sprintf(
+                            site_locations[site_short==selectedSite$site_short,]$site))), 
+   tags$br(),
+   print(
      if(!is.na(round(selectedSite[,input$color,with=F])))
        {
-     paste("Daily Mean of", as.character(legend.values[input$color]),":",
+     HTML(paste("Daily Mean of", HTML(legend.values[input$color]),":",
            round(selectedSite[,input$color,with=F],1), 
-           as.character(units.legend[input$color]))
+           HTML(units.legend[input$color])))
       } else {
-     "No data"}), 
-   tags$hr(),
-   tags$a(href="https://www.epa.gov/criteria-air-pollutants#self",
-          tags$em("For more information about Criteria Pollutants"))
+     "No data"})
   ))
   leafletProxy("map") %>% addPopups(selectedSite$longitude, selectedSite$latitude, 
                                     content, layerId = id)
