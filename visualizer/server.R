@@ -297,8 +297,8 @@ output$poldesc<- renderText({
                                       paste(7:11*2-12,"pm"))) +
           theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
          geom_line(size=1.2)+colScale+
-          theme_pander(18)+xlab("Time (h)")+
-         ylab("Carbon Monoxide (ppm)")+xlim(0,23)+
+          theme_pander(18)+
+         ylab("Carbon Monoxide (ppm)")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
         scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
@@ -317,6 +317,7 @@ output$poldesc<- renderText({
         theme(line = element_blank(),
               text = element_blank(),
               title = element_blank())
+        
     )
   }
   

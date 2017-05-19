@@ -115,13 +115,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                
                plotOutput("tsPoll", height = 400), #plotOutput("scatterCollegeIncome", height = 250)
                tags$hr(),
+               
+               p(tags$strong("Interpreting this data with respect to government health based standards:")),
+               tags$p(textOutput("tsNotation")),
                strong("The data presented here is NOT regulatory data and errors may exist."),
                strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
-                        "Please follow current outdoor conditions and health recommendations from 
-                                the San Diego County APCD.", target="_blank")),
-               tags$hr(), 
-               p(tags$strong("Interpreting this data with respect to government health based standards:")),
-               tags$p(textOutput("tsNotation"))
+                             "Please follow current outdoor conditions and health recommendations from 
+                             the San Diego County APCD.", target="_blank")),
+               tags$hr()
              )
            )
           #   h2("Hourly Data Plot"), 
