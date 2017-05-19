@@ -63,12 +63,13 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
     'Data compiled for the ',
     tags$a(href="http://deohs.washington.edu/syairstudy",
-           tags$em('San Ysidro Community Air Monitoring Data Project')),
+           tags$em('San Ysidro Community Air Monitoring Data Project'), target="_blank"),
     tags$br(),
-    tags$a(href="http://deohs.washington.edu/faculty/seto_edmund",
+    tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
            "Principle Investigator: Edmund Seto at University of Washington"),
     tags$br(),"Funded by the ", 
-    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)"),
+    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)",
+           target="_blank"),
     tags$br(),"Created by Elena Austin at University of Washington"
    )
   )
@@ -117,7 +118,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                strong("The data presented here is NOT regulatory data and errors may exist."),
                strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
                         "Please follow current outdoor conditions and health recommendations from 
-                                the San Diego County APCD.")),
+                                the San Diego County APCD.", target="_blank")),
                tags$hr(), 
                p(tags$strong("Interpreting this data with respect to government health based standards:")),
                tags$p(textOutput("tsNotation"))

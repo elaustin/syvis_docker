@@ -89,7 +89,8 @@ output$poldesc<- renderText({
       print(paste(tags$p("Ozone is the main ingredient of smog. At ground level, ozone is formed when pollutants chemically react in the presence of sunlight. The main sources of ozone are trucks, cars, planes, trains, factories, farms, construction, and dry cleaners."),
                   tags$p("Ozone can irritate the lungs, cause inflammation, and make chronic illnesses worse, even at low levels of exposure. Children and the elderly are sensitive to the effects of ozone. Ozone levels are highest in the afternoon and on hot days People who spend a lot of time outdoors may also be affected by ozone."),
                   tags$a(href="https://www.epa.gov/ozone-pollution",
-                         tags$em("For more information about Ozone see the EPA website."))
+                         tags$em("For more information about Ozone see the EPA website.", 
+                                 target="_blank"))
                   
       ))
     } else if (input$color=="pm25") 
@@ -103,7 +104,8 @@ output$poldesc<- renderText({
       tags$p(),
       "Children, the elderly, and people suffering from heart or lung disease, asthma, or chronic illness are most sensitive to the effects of PM2.5 exposure.",
       tags$br(),
-      tags$a(href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics#PM",                        tags$em(paste0("For more information about PM see the EPA website.")))
+      tags$a(href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics#PM",                        tags$em(paste0("For more information about PM see the EPA website.")),
+             target="_blank")
     )
     )
     } else if (input$color == "NO2")
@@ -127,7 +129,8 @@ output$poldesc<- renderText({
       "People with asthma, as well as children and the elderly are generally at greater risk for  the health effects of NO",
       tags$sub(2),".",
       tags$br(),
-      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Dioxide see the EPA website.")))
+      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Dioxide see the EPA website.")),
+             target="_blank")
     )
     )
     } else if (input$color == "NO")
@@ -144,7 +147,8 @@ output$poldesc<- renderText({
       tags$p(),
       "People with asthma, as well as children and the elderly are generally at greater risk for  the health effects of NO.",
       tags$br(),
-      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Oxide see the EPA website.")))
+      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        tags$em(paste0("For more information about Nitrogen Oxide see the EPA website.")),
+             target="_blank")
     )
     )
     } else if (input$color == "CO")
@@ -157,7 +161,8 @@ output$poldesc<- renderText({
       tags$p(),
       tags$br(),
       tags$a(href="https://www.epa.gov/co-pollution/basic-information-about-carbon-monoxide-co-outdoor-air-pollution#What is CO",                        
-             tags$em(paste0("For more information about Carbon Monoxide see the EPA website.")))
+             tags$em(paste0("For more information about Carbon Monoxide see the EPA website.")),
+             target="_blank")
     )
     )
     }
