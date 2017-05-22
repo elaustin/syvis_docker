@@ -29,13 +29,13 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    
    leafletOutput("map", width = "100%", height ="100%"),
    
-   absolutePanel(
-     id = "controls", class = "panel panel-default", fixed = TRUE,
-     draggable = TRUE, bottom = 20, left = "auto", right = 10, top = "auto",
-     width = 310, height = "auto",
-     HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
-     tags$div(id = 'demo',  class="collapse in",
-              htmlOutput('poldesc'))),
+   # absolutePanel(
+   #   id = "controls", class = "panel panel-default", fixed = TRUE,
+   #   draggable = TRUE, bottom = 20, left = "auto", right = 10, top = "auto",
+   #   width = 310, height = "auto",
+   #   HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
+   #   tags$div(id = 'demo',  class="collapse in",
+   #            htmlOutput('poldesc'))),
    
    # Shiny versions prior to 0.11 should use class="modal" instead.
    absolutePanel(
@@ -52,7 +52,10 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     
     h3("San Ysidro Air Explorer"), 
     dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T)),
-    selectInput("color", h4("Pollutant"), vars, selected="pm25")
+    selectInput("color", h4("Pollutant"), vars, selected="pm25"),
+    HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
+    tags$div(id = 'demo',  class="collapse",
+    htmlOutput('poldesc'))
     ),
   
    absolutePanel(
@@ -68,9 +71,9 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
            "Principle Investigator: Edmund Seto at University of Washington"),
     tags$br(),"Funded by the ", 
+    tags$br(),"Visualization by Elena Austin at University of Washington",
     tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)",
-           target="_blank"),
-    tags$br(),"Created by Elena Austin at University of Washington"
+           target="_blank")
    )
   )
  ),
