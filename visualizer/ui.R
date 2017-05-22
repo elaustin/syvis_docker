@@ -68,11 +68,13 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     tags$a(href="http://deohs.washington.edu/syairstudy",
            tags$em('San Ysidro Community Air Monitoring Data Project'), target="_blank"),
     tags$br(),
+    'Principle Investigator: ',
     tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
-           "Principle Investigator: Edmund Seto at University of Washington"),
+           "Dr. Edmund Seto"),
+    ' at University of Washington',
+    tags$br(),"Visualization by Dr. Elena Austin at University of Washington",
     tags$br(),"Funded by the ", 
-    tags$br(),"Visualization by Elena Austin at University of Washington",
-    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment(OEHHA)",
+    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment (OEHHA)",
            target="_blank")
    )
   )
