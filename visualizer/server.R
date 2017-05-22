@@ -193,12 +193,12 @@ output$poldesc<- renderText({
      if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
           paste("For these sites, on this day, there are hours when",
                 labels[varvalue],
-                "mesured by this sensor network", 
+                "measured by this sensor network", 
                 "exceeds the 1-hour CAAQS standard of 90 ppb set by the calEPA.")
    } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
           paste("For these sites, on this day, there are no hours of",
                 labels[varvalue], 
-                "mesured by this sensor network that exceed the 1-hour CAAQS standard of 90 ppb set by the calEPA.")
+                "measured by this sensor network that exceed the 1-hour CAAQS standard of 90 ppb set by the calEPA.")
      })}   
    
    else if (varvalue%in%c("NO")) {print("There is no health based recommendation for this pollutant.")
@@ -209,12 +209,12 @@ output$poldesc<- renderText({
        if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
          paste("For these sites, on this day, there are hours when",
                labels[varvalue],
-               "mesured by this sensor network", 
+               "measured by this sensor network", 
                "exceeds the 1-hour NAAQS standard of 100 ppb set by the EPA.")
        } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
          paste("For these sites, on this day, there are no hours of",
                labels[varvalue], 
-               "mesured by this sensor network that exceed the 1-hour NAAQS standard of 100 ppb set by the EPA.")
+               "measured by this sensor network that exceed the 1-hour NAAQS standard of 100 ppb set by the EPA.")
        } else {paste("There is no data.")}
    )} else if(varvalue%in%c("CO")) {
      
@@ -223,12 +223,12 @@ output$poldesc<- renderText({
      {
        paste("For these sites, on this day, there are hours when",
              labels[varvalue],
-             "mesured by this sensor network", 
+             "measured by this sensor network", 
              "exceeds the 8-hour NAAQS standard of 9 ppm set by the EPA.")
      }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
        paste("For these sites, on this day, there are no hours of",
              labels[varvalue], 
-             "mesured by this sensor network that exceed the 8-hour NAAQS standard of 9 ppm set by the EPA.")
+             "measured by this sensor network that exceed the 8-hour NAAQS standard of 9 ppm set by the EPA.")
        } else {paste("There is no data.")} )
    } else if(varvalue%in%c("pm25")){
      print(
@@ -236,12 +236,12 @@ output$poldesc<- renderText({
        {
          paste("For these sites, on this day, there are hours when",
                labels[varvalue],
-               "mesured by this sensor network", 
+               "measured by this sensor network", 
                "exceeds the 24-hour NAAQS standard of 35 ug/m3 set by the EPA.")
        }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
          paste("For these sites, on this day, there are no hours of",
                labels[varvalue], 
-               "mesured by this sensor network that exceed the 24-hour NAAQS standard of 35 ug/m3 set by the EPA.")
+               "measured by this sensor network that exceed the 24-hour NAAQS standard of 35 ug/m3 set by the EPA.")
          }   else {paste("There is no data.")}
      )
    }
