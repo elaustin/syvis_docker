@@ -8,13 +8,6 @@ library(ggthemes)
 
 
 options(device='cairo')
-# 
-# # Leaflet bindings are a bit slow; for now we'll just sample to compensate
-# set.seed(100)
-# zipdata <- allzips[sample.int(nrow(allzips), 10000),]
-# # By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
-# # will be drawn last and thus be easier to see
-# zipdata <- zipdata[order(zipdata$centile),]
 
 shinyServer(function(input, output, session) {
  
@@ -144,7 +137,7 @@ output$poldesc<- renderText({
       tags$sub(2),
       " is used by calEPA as the indicator for the larger group of nitrogen oxides.",
       tags$p(),
-      "NO is a colourless gass and a major component of diesel exhaust.",
+      "NO is a colorless gas and a major component of diesel exhaust.",
       tags$p(),
       "People with asthma, as well as children and the elderly are generally at greater risk for  the health effects of NO.",
       tags$br(),
