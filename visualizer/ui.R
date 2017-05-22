@@ -16,6 +16,9 @@ vars <- c(
 shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                    theme = "bootstrap.css",
                    
+ 
+  
+           
  tabPanel(strong("Map"),
   div(class = "outer",
       
@@ -50,7 +53,9 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     width = 330,
     height = "auto",
     
-    h3("San Ysidro Air Explorer"), 
+    h3("San Ysidro Air Explorer"),
+    radioButtons("language","Select Language",c("English"="en", "Español"="sp"),
+                 inline=T),
     dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T)),
     selectInput("color", h4("Pollutant"), vars, selected="pm25"),
     HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
@@ -191,5 +196,22 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
    DT::dataTableOutput("sitetable")
  ),
  
- conditionalPanel("false", icon("crosshair"))
+ tabPanel(strong("ABOUT"),
+          fluidPage(
+            titlePanel("About the San Ysidro Air Monitoring Study"),
+            mainPanel(
+              "Welcome to the web visualization of the San Ysidro Community Air monitoring project. This two-year project, funded by the California Office of Environmental Health Hazard Assessment (OEHHA), has the primary objective of understanding the air pollution health risks faced by the community.",
+              h3("Project Partners"),
+              img(src="SYorgwithLogo.png", width=500),
+              tags$hr(),
+              h3("Data Access"),
+              "This project has an open data policy. For those wishing to access the data files used to create this visualization, please complete the following ",
+              
+              strong(tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSe-Wme3vV3eQCHB4KqPxOI2XR-QQm1M3WQmjy-yK2SkblQydg/viewform?usp=sf_link",
+                            "webform.", target="_blank")),
+              " We do ask that you provide a short description of your intended use of the data. This data is not intended for commercial use."
+              
+              
+            )))
+ 
 ))

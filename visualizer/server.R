@@ -47,6 +47,7 @@ shinyServer(function(input, output, session) {
  ## Interactive Map ###########################################
  
  # Create the map
+observe({
  output$map <- renderLeaflet({
   leaflet() %>%
    addTiles(
@@ -82,7 +83,7 @@ output$pollDescrip <- reactive({
   } else "Nothing"
   
 })
-
+})
 
 output$poldesc<- renderText({
     if(input$color=="O3"){
@@ -337,9 +338,9 @@ output$poldesc<- renderText({
           guides(fill=guide_legend(nrow=2,byrow=TRUE))+
           scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
            #add to include donovan APCD data
-           #geom_line(aes(eval(as.name("hour")), 
-           #              eval(as.name(paste0(varvalue, "_donovan"))),
-           #               color="Donovan Regulatory"), size=1.2)+
+           geom_line(aes(eval(as.name("hour")), 
+                         eval(as.name(paste0(varvalue, "_donovan"))),
+                          color="Donovan Regulatory"), size=1.2)+
            scale_color_manual(name="", values = c(myColors, 
                                                   "Donovan Regulatory"="black"))
          
