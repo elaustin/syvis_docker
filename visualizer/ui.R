@@ -54,7 +54,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     height = "auto",
     
     h3("San Ysidro Air Explorer"),
-    radioButtons("language","Select Language",c("English"="en", "Español"="sp"),
+    radioButtons("language",h4("Select Language"),c("English"="en", "Español"="sp"),
                  inline=T),
     dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T)),
     selectInput("color", h4("Pollutant"), vars, selected="pm25"),
