@@ -56,10 +56,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     h3("San Ysidro Air Explorer"),
     radioButtons("language",h4("Select Language"),c("English"="en", "Español"="sp"),
                  inline=T),
+    textOutput("translateMessage"),
     dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T)),
+    
     selectInput("color", h4("Pollutant"), vars, selected="pm25"),
+   
     HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
-    tags$div(id = 'demo',  class="collapse",
+    tags$div(id = 'demo',  class="collapse", 
+    style = "overflow-y:scroll; max-height: 40vh",
     htmlOutput('poldesc'))
     ),
   
@@ -144,59 +148,32 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  ),
  
  
- tabPanel(
-   strong("Data explorer"),
-   fluidRow(
-     column(3,
-            selectInput(
-              "sites",#"states",
-              "Sites",#"States",
-              c("All Sites"="", site_locations$site), multiple=TRUE)
-     ),
-     column(3,
-            conditionalPanel(
-              "input.sites", #"input.states",
-              dateInput("startdate", label = ("Start Date"), 
-                        value = max(data_wide$date_day, na.rm=T)))),
-     column(3,
-            conditionalPanel(
-              "input.sites", #"input.states",
-              selectInput("pollutants", "Pollutants", c("All Pollutants" =
-                                                          #selectInput("cities", "Cities", c("All cities" =
-                                                          ""), multiple = TRUE)
-            ))
-     # column(3,
-     #        conditionalPanel(
-     #         "input.states",
-     #         selectInput("zipcodes", "Zipcodes", c("All zipcodes" =
-     #                                                ""), multiple = TRUE)
-     #        ))
-   ),
-   # fluidRow(column(
-   #  1,
-   #  numericInput(
-   #   "minScore",
-   #   "Min score",
-   #   min = 0,
-   #   max = 100,
-   #   value = 0
-   #  )
-   # ),
-   # column(
-   #  1,
-   #  numericInput(
-   #   "maxScore",
-   #   "Max score",
-   #   min = 0,
-   #   max = 100,
-   #   value = 100
-   #  )
-   # )),
-   hr(),
-   DT::dataTableOutput("sitetable")
- ),
+ # tabPanel(
+ #   strong("Data explorer"),
+ #   fluidRow(
+ #     column(3,
+ #            selectInput(
+ #              "sites",#"states",
+ #              "Sites",#"States",
+ #              c("All Sites"="", site_locations$site), multiple=TRUE)
+ #     ),
+ #     column(3,
+ #            conditionalPanel(
+ #              "input.sites", #"input.states",
+ #              dateInput("startdate", label = ("Start Date"), 
+ #                        value = max(data_wide$date_day, na.rm=T)))),
+ #     column(3,
+ #            conditionalPanel(
+ #              "input.sites", #"input.states",
+ #              selectInput("pollutants", "Pollutants", c("All Pollutants" =
+ #                            ""), multiple = TRUE)
+ #            ))
+ #        ),
+ #     hr(),
+ #   DT::dataTableOutput("sitetable")
+ # ),
  
- tabPanel(strong("ABOUT"),
+ tabPanel(strong("About"),
           fluidPage(
             titlePanel("About the San Ysidro Air Monitoring Study"),
             mainPanel(
