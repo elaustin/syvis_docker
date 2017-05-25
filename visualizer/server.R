@@ -263,6 +263,11 @@ output$poldesc<- renderText({
    plotdata=data()[date_day%in%as.character(input$date1)]
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
+   
+   if(nrow(plotdata)>0){
+   if(min(plotdata$date_day,na.rm=T)>="2017-03-01") 
+      plotdata<-plotdata[!site_short=="martinez",]
+   }
  
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
   maxvalnumbers<-c("pm25"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
@@ -278,7 +283,7 @@ output$poldesc<- renderText({
   names(myColors) <- levels(as.factor(site_locations$site))
   colScale <- scale_color_manual(name = "",values = myColors)
   
-  ylab.values<-c("pm25"="Particle Mass PM2.5 (ug/m3)",
+  ylab.values<-c("pm25"="Particulate Mass PM2.5 (ug/m3)",
                    "O3"="Ozone (ppb)",
                    "NO2"="Nitrogen Dioxide (ppb)",
                    "NO" = "Nitrogen Oxide (ppb)",
@@ -364,6 +369,9 @@ output$poldesc<- renderText({
   
   data_summ <- data_summary()
   
+  if(min(data_summ$date_day,na.rm=T)>="2017-03-01") 
+    data_summ<-data_summ[!site_short=="martinez",]
+  
   
   if(nrow(data_summ)>1){
    
@@ -373,7 +381,8 @@ output$poldesc<- renderText({
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <-rev(brewer.pal(n = 9, "RdYlGn")[1:7])
+   palette_rev2 <- rev(brewer.pal(n = 9, "RdYlGn")[1:7]) 
+   #rev(c('#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4'))                   
    pal2 <- colorBin(palette_rev2,c(0,
                                    quantile(data()[,colorBy, 
                                                    by=date_day,with=F], 
@@ -414,24 +423,21 @@ output$poldesc<- renderText({
   if(!is.null(colorData)){
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
    clearShapes() %>%
-   addCircleMarkers(~longitude, ~latitude, radius= 11, layerId = ~site_short, 
+   addCircleMarkers(~longitude, ~latitude, radius= 12, layerId = ~site_short, 
               stroke=T, color="black",weight=2, opacity=.8,
               fillOpacity=1, 
-              fillColor=pal2(colorData), 
-              #label=~label.vals,
-              #labelOptions = labelOptions(noHide = F, 
-              #                            direction="auto")
-   ) %>%
+              fillColor=pal2(colorData),
+              options = markerOptions(draggable = FALSE, riseOnHover=T)) %>%
    addLegend(className = "panel panel-default legend",
              "topleft", pal=pal2, values=colorData, title=HTML(legend.values[colorBy]),
              layerId="colorLegend",na.label = "No Data", opacity=0.8) 
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%
-       addCircleMarkers(~longitude, ~latitude, radius= 11, 
+       addCircleMarkers(~longitude, ~latitude, radius= 12, 
                         layerId = ~site_short, 
                       stroke=T, color="black",weight=2, opacity=.8,
-                      fillOpacity=1, fillColor="grey") %>%
+                      fillOpacity=1, fillColor="lightgrey") %>%
      addLegend("topleft", values=NA, title=as.character(legend.values[colorBy]),
                layerId="colorLegend", opacity=0.8)
      
