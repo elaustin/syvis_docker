@@ -369,6 +369,17 @@ output$poldesc<- renderText({
   
   data_summ <- data_summary()
   
+  limitsbypoll<-c("pm25"=80,
+                  "O3"=100,
+                  "NO"=120,
+                  "NO2"=120,
+                  "CO" =2)
+  binsbypoll<-c("pm25"=10,
+                "O3"=10,
+                "NO"=10,
+                "NO2"=10,
+                "CO" =6)
+  
   if(min(data_summ$date_day,na.rm=T)>="2017-03-01") 
     data_summ<-data_summ[!site_short=="martinez",]
   
@@ -383,10 +394,11 @@ output$poldesc<- renderText({
    colorData2 <- data_summary1[[colorBy]]
    palette_rev2 <- rev(brewer.pal(n = 9, "RdYlGn")[1:7]) 
    #rev(c('#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4'))                   
-   pal2 <- colorBin(palette_rev2,c(0,
-                                   quantile(data()[,colorBy, 
+   pal2 <- colorBin(palette_rev2, bins= binsbypoll[colorBy], pretty=T, na.color ="lightgrey",
+                    c(0,max(limitsbypoll[colorBy],
+                            quantile(data()[,colorBy, 
                                                    by=date_day,with=F], 
-                                            na.rm=T, .996)), 6, pretty=T, na.color ="lightgrey")}
+                                            na.rm=T, .996))))}
   
   #}
   
