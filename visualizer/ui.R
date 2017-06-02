@@ -19,7 +19,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  
   
            
- tabPanel(strong("Map"),
+ tabPanel(strong("Map / Mapa"),
   div(class = "outer",
       
    
@@ -54,14 +54,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     height = "auto",
     
     h3("San Ysidro Air Explorer"),
-    radioButtons("language",h4("Select Language"),c("English"="en", "Español"="sp"),
+    radioButtons("language",(""),c("English"="en", "Español"="sp"),
                  inline=T),
     textOutput("translateMessage"),
-    dateInput("date", label = h4("Date input"), value = max(data_wide$date_day, na.rm=T), min="2017-01-01"),
+    dateInput("date", label = h4("Date / Fecha"), value = max(data_wide$date_day, na.rm=T), min="2017-01-01"),
     
-    selectInput("color", h4("Pollutant"), vars, selected="pm25"),
+    selectInput("color", label=h4("Pollutant / Contaminante"), vars, selected="pm25"),
    
-    HTML('<button data-toggle="collapse" data-target="#demo">Pollutant Information</button>'),
+    HTML('<button data-toggle="collapse" data-target="#demo">Information / Información </button>'),
     tags$div(id = 'demo',  class="collapse", 
     style = "overflow-y:scroll; max-height: 40vh",
     htmlOutput('poldesc'))
@@ -72,23 +72,11 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     class = "panel panel-default", fixed = TRUE,
     draggable = TRUE, bottom = 20, left = 10, right = "auto", top = "auto",
     width = "auto", height = "auto",
-    tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
-    'Data compiled for the ',
-    tags$a(href="http://deohs.washington.edu/syairstudy",
-           tags$em('San Ysidro Community Air Monitoring Data Project'), target="_blank"),
-    tags$br(),
-    'Principal Investigator: ',
-    tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
-           "Dr. Edmund Seto"),
-    ' at University of Washington',
-    tags$br(),"Visualization by Dr. Elena Austin at University of Washington",
-    tags$br(),"Funded by the ", 
-    tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment (OEHHA)",
-           target="_blank")
+    htmlOutput('citedesc')
    )
   )
  ),
-  tabPanel(strong("Hourly Data"),
+  tabPanel(strong("Hourly Data / Datos horarios"),
            # absolutePanel(
            #  id = "controls",
            #  class = "panel panel-default",
@@ -104,7 +92,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
            pageWithSidebar(
              headerPanel('Hourly Data Plot, Select Sites and Dates'),
              sidebarPanel(
-               dateInput("date1", label = "Date input", value =max(data_wide$date_day, na.rm=T)),
+               dateInput("date1", label = "Date / Fecha", value =max(data_wide$date_day, na.rm=T)),
                
                radioButtons(
                  inputId="radio",
@@ -123,19 +111,16 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                    choices=site_locations$site )),
                  
              
-               selectInput("tsvars", "Pollutant:", vars, selected="pm25")
+               selectInput("tsvars", label=h4("Pollutant / Contaminante"), vars, selected="pm25")
              ),
              mainPanel(
                
-               plotOutput("tsPoll", height = 400), #plotOutput("scatterCollegeIncome", height = 250)
+               plotOutput("tsPoll", height = 400),
                tags$hr(),
                
                p(tags$strong("Interpreting this data with respect to government health based standards:")),
                tags$p(textOutput("tsNotation")),
-               strong("The data presented here is NOT regulatory data and errors may exist."),
-               strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
-                             "Please follow current outdoor conditions and health recommendations from 
-                             the San Diego County APCD.", target="_blank")),
+               htmlOutput('notreg'),
                tags$hr()
              )
            )
@@ -173,20 +158,33 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
  #   DT::dataTableOutput("sitetable")
  # ),
  
- tabPanel(strong("About"),
+ tabPanel(strong("About / Sobre Nosotros"),
           fluidPage(
-            titlePanel("About the San Ysidro Air Monitoring Study"),
+           
             mainPanel(
+              h3("About the San Ysidro Air Monitoring Study"),
               "Welcome to the web visualization of the San Ysidro Community Air monitoring project. This two-year project, funded by the California Office of Environmental Health Hazard Assessment (OEHHA), has the primary objective of understanding the air pollution health risks faced by the community.",
-              h3("Project Partners"),
+              tags$hr(),
+              h3("Acerca del Estudio de Monitoreo del Aire de San Ysidro"),
+              "Bienvenido a la visualización por internet del proyecto de monitoreo del Aire de la Comunidad de San Ysidro. Este proyecto de dos años, financiado por la Oficina de Evaluación de Riesgos a la Salud Ambiental (OEHHA), tiene como objetivo principal la comprensión de los riesgos a la salud por la contaminación ambiental que enfrenta la comunidad.",
+              h3("Project Partners / Socios del Proyecto"),
               img(src="SYorgwithLogo.png", width=500),
               tags$hr(),
+              
               h3("Data Access"),
               "This project has an open data policy. For those wishing to access the data files used to create this visualization, please complete the following ",
               
               strong(tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSe-Wme3vV3eQCHB4KqPxOI2XR-QQm1M3WQmjy-yK2SkblQydg/viewform?usp=sf_link",
                             "webform.", target="_blank")),
-              " We do ask that you provide a short description of your intended use of the data. This data is not intended for commercial use."
+              " We do ask that you provide a short description of your intended use of the data. This data is not intended for commercial use.",
+              tags$hr(),
+              h3("Acceso a los Datos"),
+              "Este Proyecto tiene una política de datos abierta. Para aquellos que quieren acceso a los archivos de datos utilizados para crear esta visualización, por favor rellenen la siguiente",
+              
+              strong(tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSe-Wme3vV3eQCHB4KqPxOI2XR-QQm1M3WQmjy-yK2SkblQydg/viewform?usp=sf_link",
+                            "forma de internet", target="_blank")),
+              ". Le pediremos que nos proporciones una descripción corta del uso que pretende darle a los datos. Estos datos no son para uso comercial."
+              
               
               
             )))
