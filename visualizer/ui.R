@@ -53,8 +53,8 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     width = 330,
     height = "auto",
     
-    h3("San Ysidro Air Explorer"),
-    h3(radioButtons("language",(""),c("English"="en", "Español"="sp"),
+    h4("Daily Concentration / Concentración Diaria"),
+    h4(radioButtons("language",(""),c("English"="en", "Español"="sp"),
                  inline=T)),
     #textOutput("translateMessage"),
     dateInput("date", label = h4("Date / Fecha"), value = max(data_wide$date_day, na.rm=T), min="2017-01-01"),
@@ -67,12 +67,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     htmlOutput('poldesc'))
     ),
   
-   absolutePanel(
-    id = "cite", 
-    class = "panel panel-default", fixed = TRUE,
-    draggable = TRUE, bottom = 20, left = 10, right = "auto", top = "auto",
-    width = "auto", height = "auto",
-    htmlOutput('citedesc')
+   fixedPanel(
+     id = "cite", 
+     class = "panel panel-default", 
+     draggable = F, bottom = 10, left = 10, right = "auto", top = "auto",
+     width = "auto", height = "auto",
+     HTML('<button data-toggle="collapse" data-target="#cites">&#9733</button>'),
+     tags$div(id = 'cites',  class="collapse in",
+    htmlOutput('citedesc'))
    )
   )
  ),

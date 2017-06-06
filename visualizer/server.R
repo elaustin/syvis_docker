@@ -15,7 +15,7 @@ shinyServer(function(input, output, session) {
  
 ##create data
   
-  data <- reactive ({
+  datats <- reactive ({
     
       if(input$radio == "All"){
         data_wide
@@ -23,6 +23,11 @@ shinyServer(function(input, output, session) {
         data_wide[site%in%input$tssites]
       }
     })
+  
+  data <- reactive ({
+    
+    data_wide
+  })
   
   data_summary <- reactive ({
     data_summary<-data_wide[date_day%in%as.character(input$date),
@@ -166,7 +171,7 @@ output$pollDescrip <- reactive({
       ))
     }else if(input$language=="sp") {
       print(paste(tags$b("Los datos aquí presentados NO son datos reglamentarios."), tags$br(),
-                  tags$b("El sitio de internet estás actualmente en modo BETA. Todos los datos son preliminares y pueden actualizarse posteriormente."), tags$br(),
+                  tags$b("El sitio de internet está actualmente en modo BETA. Todos los datos son preliminares y pueden actualizarse posteriormente."), tags$br(),
                   'Los datos recopilados por el  ',
                   tags$a(href="http://deohs.washington.edu/syairstudy",
                          tags$em('Proyecto de Datos de Monitoreo del Aire de la Comunidad de San Ysidro'), target="_blank"),
@@ -354,6 +359,13 @@ output$poldesc<- renderText({
   }
   
 })
+
+output$tsNotationtitle<-renderText({
+  
+  ifelse(input$language=="en", "Interpreting this data with respect to government health based standards:", "La información se interpreta en relación con los estándares gubernamentales de salud.")
+  
+  
+})
  output$tsNotation <- renderText({
    CAAQS24hr<-c("pm25"=35,
                     "O3"=90,
@@ -363,7 +375,7 @@ output$poldesc<- renderText({
    
    varvalue<-input$tsvars
    scaleby<-ifelse(varvalue=="CO",0.5,10)
-   plotdata=data()[date_day%in%as.character(input$date1)]
+   plotdata=datats()[date_day%in%as.character(input$date1)]
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
    
@@ -517,7 +529,7 @@ output$poldesc<- renderText({
    #fix selecting sites!!!!
    varvalue<-input$tsvars
    scaleby<-ifelse(input$tsvars=="CO",0.5,10)
-   plotdata=data()[date_day%in%as.character(input$date1)]
+   plotdata=datats()[date_day%in%as.character(input$date1)]
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
    
