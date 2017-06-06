@@ -1,5 +1,3 @@
-
-library(RColorBrewer)
 library(shiny)
 library(leaflet)
 library(RColorBrewer)
@@ -67,69 +65,6 @@ observe({
  # })
  # 
 
- #update not reg text
- output$notreg<-renderText({
-   if(input$language=="en"){
-   print(paste(strong("The data presented here is NOT regulatory data and errors may exist."),
-         strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
-                       "Please follow current outdoor conditions and health recommendations from 
-                       the San Diego County APCD.", target="_blank"))))
-   } else if (input$language=="sp"){
-     
-     print(paste(strong("Los datos aquí presentados NO son datos reglamentarios y pueden existir errores. "),
-                 strong(tags$a(href="http://sd.sdapcd.org/Airvision/",
-                               "Por favor siga las recomendaciones actuales de condiciones en exteriores y de salud del APCD del Condado de San Diego.", target="_blank"))))
-     
-     
-     
-     
-   }
-   
-   
- })
- #update select input
- observe({
-   if(input$language=="sp"){
-     vars <- c(
-       "Materia Particulada " = "pm25", #"Is SuperZIP?" = "superzip",
-       "Monóxido de Carbono" = "CO", #"Centile score" = "centile",
-       "Óxido de Nitrógeno" = "NO",
-       "Dióxido de Nitrógeno" = "NO2",
-       "Ozono" = "O3"
-     )
-   
-   updateSelectInput(session, inputId="color",
-                     choices=vars,
-                     selected = "pm25"
-   )
-   updateSelectInput(session, inputId="tsvars",
-                     choices=vars,
-                     selected = "pm25"
-   )
-   
-   }
-   if(input$language=="en"){
-     vars <- c(
-       "Particulate Matter" = "pm25", #"Is SuperZIP?" = "superzip",
-       "Carbon Monoxide" = "CO", #"Centile score" = "centile",
-       "Nitrogen Oxide" = "NO",
-       "Nitrogen Dioxide" = "NO2",
-       "Ozone" = "O3"
-     )
-     
-     updateSelectInput(session, inputId="color",
-                       choices=vars,
-                       selected = "pm25"
-     )
-     updateSelectInput(session, inputId="tsvars",
-                       choices=vars,
-                       selected = "pm25"
-     )
-     }
- })
- 
- 
-   
 output$translateMessage <- reactive({
   ifelse(input$language=="sp","La versión en español está en desarrollo.",
          "")})
@@ -146,46 +81,8 @@ output$pollDescrip <- reactive({
   
 })
 })
-  
-  output$citedesc <- renderText({
-    if(input$language=="en") {
-      print(paste(tags$b("Community monitoring data is NOT regulatory."), tags$br(),
-                  tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
-                  'Data compiled for the ',
-                  tags$a(href="http://deohs.washington.edu/syairstudy",
-                         tags$em('San Ysidro Community Air Monitoring Data Project'), target="_blank"),
-                  tags$br(),
-                  'Principal Investigator: ',
-                  tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
-                         "Dr. Edmund Seto"),
-                  ' at University of Washington',
-                  tags$br(),"Visualization by Dr. Elena Austin at University of Washington",
-                  tags$br(),"Funded by the ", 
-                  tags$a(href="https://oehha.ca.gov/","Office of Environmental Health Hazard Assessment (OEHHA)",
-                         target="_blank")
-      ))
-    }else if(input$language=="sp") {
-      print(paste(tags$b("Los datos aquí presentados NO son datos reglamentarios."), tags$br(),
-                  tags$b("El sitio de internet estás actualmente en modo BETA. Todos los datos son preliminares y pueden actualizarse posteriormente."), tags$br(),
-                  'Los datos recopilados por el  ',
-                  tags$a(href="http://deohs.washington.edu/syairstudy",
-                         tags$em('Proyecto de Datos de Monitoreo del Aire de la Comunidad de San Ysidro'), target="_blank"),
-                  tags$br(),
-                  'Investigador Principal:  ',
-                  tags$a(href="http://deohs.washington.edu/faculty/seto_edmund", target="_blank",
-                         "Dr. Edmund Seto"),
-                  ' en la Universidad de Washington',
-                  tags$br(),"Visualización por Dr. Elena Austin en la Universidad de Washington",
-                  tags$br(),"Financiado por la ", 
-                  tags$a(href="https://oehha.ca.gov/","Oficina de Evaluación de Riesgos a la Salud Ambiental  (OEHHA)",
-                         target="_blank")
-      ))
-    }
-    
-  })
 
 output$poldesc<- renderText({
-  if(input$language=="en"){
     if(input$color=="O3"){
       print(paste(tags$p("Ozone is the main ingredient of smog. At ground level, ozone is formed when pollutants chemically react in the presence of sunlight. The main sources of ozone are trucks, cars, planes, trains, factories, farms, construction, and dry cleaners."),
                   tags$p("Ozone can irritate the lungs, cause inflammation, and make chronic illnesses worse, even at low levels of exposure. Children and the elderly are sensitive to the effects of ozone. Ozone levels are highest in the afternoon and on hot days People who spend a lot of time outdoors may also be affected by ozone."),
@@ -267,91 +164,6 @@ output$poldesc<- renderText({
     )
     )
     }
-  }  else if(input$language=="sp"){
-    if(input$color=="O3"){
-      print(paste(tags$p("El ozono (O3) es el ingrediente principal del smog. A nivel del suelo, el ozono se forma cuando los contaminantes reaccionan químicamente en la presencia de la luz solar. Las principales fuentes de ozono son los camiones, autos, aviones, trenes, industrias, granjas, construcción y tintorerías."),
-                  tags$p("El ozono puede irritar los pulmones, causar inflamación y empeorar las enfermedades crónicas, incluso a bajos niveles de exposición. Los niños y los ancianos son sensibles a los efectos del ozono. Los niveles de ozono son más altos por las tardes y en los días calurosos. Las personas que pasan mucho tiempo en exteriores pueden también ser afectados por el ozono."),
-                  tags$a(href="https://www.epa.gov/ozone-pollution",
-                         tags$em("Para mayor información acerca del Ozono, consulte el sitio de internet de la EPA. ", 
-                                 target="_blank"))
-                  
-      ))
-    } else if (input$color=="pm25") 
-    {print(paste0(
-      tags$p(),
-      "La materia particulada (PM",
-      tags$sub(2.5), 
-      ") son partículas muy pequeñas de contaminación aérea (menos de 2.5 micrómetros), lo cual es menos que el grueso de un cabello humano. La PM",
-      tags$sub(2.5),
-      " 5 es una mezcla de partículas que pueden incluir sustancias químicas orgánicas, hollín y metales. Estas partículas pueden provenir de los autos y camiones, industrias, quema de madera y otras actividades. Pueden desplazarse profundamente en los pulmones y causar diversos problemas de salud incluyendo enfermedad cardíaca y pulmonar porque son muy pequeñas.",
-      tags$p(),
-      "Los niños, los ancianos y las personas que sufren enfermedad cardíaca o pulmonar, asma o enfermedades crónicas, son más sensibles a los efectos de la exposición a PM2.5.",
-      tags$br(),
-      tags$a(href="https://www.epa.gov/pm-pollution/particulate-matter-pm-basics#PM",                        
-             tags$em(paste0("Para mayor información acerca de PM, consulte el sitio de internet de la EPA.")),
-             target="_blank")
-    )
-    )
-    } else if (input$color == "NO2")
-    {print(paste0(
-      tags$p(),
-      "El Dióxido de Nitrógeno (NO",
-      tags$sub(2), 
-      ") es uno de un grupo de gases altamente reactivos conocidos como óxidos de nitrógeno (NO",
-      tags$sub("x"),
-      "). Otros óxidos de nitrógeno incluyen ácido nitroso y ácido nítrico. El NO",
-      tags$sub(2),
-      " es utilizado como indicador de un grupo más amplio de óxidos de nitrógeno.",
-      tags$p(),
-      "El NO",
-      tags$sub(2),
-      " principalmente llega el ambiente proveniente de la quema de combustible. 
-      El NO",
-      tags$sub(2),
-      " se forma a partir de las emisiones de los autos, camiones, autobuses, 
-      plantas de energía eléctrica y equipos todo terreno.",
-      tags$p(),
-      "Las personas con asma, así como los niños y los ancianos, generalmente tienen mayor riesgo de sufrir los efectos del NO",
-      tags$sub(2)," a la salud.",
-      tags$br(),
-      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        
-             tags$em(paste0("Para mayor información acerca del Dióxido de Nitrógeno, consulte el sitio de internet de la EPA.")),
-             target="_blank")
-      )
-    )
-    } else if (input$color == "NO")
-    {print(paste0(
-      tags$p(),
-      "El Óxido de Nitrógeno (NO) es uno de un grupo de gases altamente reactivos conocidos como óxidos de nitrógeno (NO",
-      tags$sub("x"),
-      "). Otros óxidos de nitrógeno incluyen ácido nitroso y ácido nítrico. El NO",
-      tags$sub(2),
-      "  es utilizado por la CalEPA como indicador de un grupo más amplio de óxidos de nitrógeno.",
-      tags$p(),
-      " El NO es un gas incoloro y el componente principal de los sistemas de escape a diesel.",
-      tags$p(),
-      "Las personas con asma, así como los niños y los ancianos tienen mayor riesgo de sufrir los efectos del NO a la salud.",
-      tags$br(),
-      tags$a(href="https://www.epa.gov/no2-pollution/basic-information-about-no2#What is NO2",                        
-             tags$em(paste0("Para mayor información acerca del Óxido de Nitrógeno, consulte el sitio de internet de la EPA. ")),
-             target="_blank")
-      )
-    )
-    } else if (input$color == "CO")
-    {print(paste0(
-      tags$p(),
-      "El Monóxido de Carbono (CO) es un gas incoloro e inodoro que puede ser nocivo cuando se inhala en grandes cantidades. El CO se libera cuando algo se quema. Las mayores fuentes de CO al aire exterior son los autos, camiones y otros vehículos o maquinaria que queman combustibles fósiles.",
-      tags$p(),
-      "Niveles muy altos de CO no es probable que ocurran al aire libre. Sin embargo, cuando los niveles de CO se elevan en exteriores, pueden ser de especial interés para las personas con algunos tipos de enfermedad cardiaca. Estas personas tienen ya una habilidad reducida para recibir sangre oxigenada en su corazón en situaciones donde el corazón necesita más oxígeno de lo habitual. ",
-      tags$p(),
-      tags$br(),
-      tags$a(href="https://www.epa.gov/co-pollution/basic-information-about-carbon-monoxide-co-outdoor-air-pollution#What is CO",                        
-             tags$em(paste0("Para mayor información acerca del Monóxido de Carbono, consulte el sitio de internet de la EPA.")),
-             target="_blank")
-    )
-    )
-    }
-  }
   
 })
  output$tsNotation <- renderText({
@@ -367,24 +179,17 @@ output$poldesc<- renderText({
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
    
-   if(input$language=="en")
-   labels<-c("pm25"="Particulate mass (PM2.5)",
+   labels<-c("pm25"="particle mass (PM2.5)",
              "O3"="Ozone",
              "NO2"="Nitrogen Dioxide",
              "NO" = "Nitrogen Oxide",
              "CO" = "Carbon Monoxide")
-   if(input$language=="sp"){
-     labels<-c("pm25"="Materia Particulada",
-               "O3"="Ozono",
-               "NO2"="Dióxido de Nitrógeno",
-               "NO" = "Óxido de Nitrógeno",
-               "CO" = "Monóxido de Carbono")}
    if (sum(is.na(plotdata[,varvalue, with=F]))==nrow(plotdata)) {
      
-     return(ifelse(input$language=="en",print("There is no data."), print("No existen datos.")))
+     return(print("There is no data."))
      
    }
-  if(input$language=="en"){   
+     
    if(varvalue%in%c("O3")) {
    
    print(
@@ -445,69 +250,7 @@ output$poldesc<- renderText({
      )
    }
    
- } else  if(input$language=="sp"){   
-   if(varvalue%in%c("O3")) {
-     
-     print(
-       
-       if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
-         paste("Para estos sitios, en este día, existen horas cuando él",
-               labels[varvalue],
-               "medido por esta red de sensores exceda en 1 hora el estándar CAAQS de 90 ppb establecido por la calEPA.")
-       } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
-         paste("Para estos sitios, en este día, NO existen horas del",
-               labels[varvalue], 
-               "medido por esta red de sensores exceda en 1 hora el estándar CAAQS de 90 ppb establecido por la calEPA.")
-       })}   
-   
-   else if (varvalue%in%c("NO")) {print("No existe recomendación con base en la salud para este contaminante.")
-   } else if(varvalue%in%c("NO2")) {
-     
-     print(
-       
-       if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0) {
-         paste("Para estos sitios, en este día, existen horas cuando él",
-               labels[varvalue],
-               "medido por esta red de sensores", 
-               "exceda en 1 hora el estándar NAAQS de 100 ppb establecido por la EPA.")
-       } else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
-         paste("Para estos sitios, en este día, NO existen horas cuando él",
-               labels[varvalue],
-               "medido por esta red de sensores", 
-               "exceda en 1 hora el estándar NAAQS de 100 ppb establecido por la EPA.")
-       } else {paste("There is no data.")}
-     )} else if(varvalue%in%c("CO")) {
-       
-       print(
-         if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0)
-         {
-           paste("Para estos sitios, en este día, existen horas cuando él",
-                 labels[varvalue],
-                 "medido por esta red de sensores", 
-                 "exceda en 8-hora el estándar NAAQS de 9 ppm establecido por la EPA.")
-         }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
-           paste("Para estos sitios, en este día, NO existen horas cuando él",
-                 labels[varvalue],
-                 "medido por esta red de sensores", 
-                 "exceda en 8-hora el estándar NAAQS de 9 ppm establecido por la EPA.")} )
-     } else if(varvalue%in%c("pm25")){
-       print(
-         if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)>0)
-         {
-           paste("Para estos sitios, en este día, existen horas cuando él",
-                 labels[varvalue],
-                 "medido por esta red de sensores", 
-                 "exceda en 24-hora el estándar NAAQS de 35 ug/m3 establecido por la EPA.")
-         }   else if(sum(plotdata[,varvalue, with=F]>=CAAQS24hr[varvalue], na.rm=T)==0) {
-           paste("Para estos sitios, en este día, NO existen horas cuando él",
-                 labels[varvalue],
-                 "medido por esta red de sensores", 
-                 "exceda en 24-hora el estándar NAAQS de 35 ug/m3 establecido por la EPA.")}
-       )
-     }
-   
- }
-   })
+ })
    
    
    
@@ -521,10 +264,8 @@ output$poldesc<- renderText({
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
    
-   if(nrow(plotdata)>0){
    if(min(plotdata$date_day,na.rm=T)>="2017-03-01") 
-      plotdata<-plotdata[!site_short=="martinez",]
-   }
+     plotdata<-plotdata[!site_short=="martinez",]
  
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
   maxvalnumbers<-c("pm25"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
@@ -540,18 +281,12 @@ output$poldesc<- renderText({
   names(myColors) <- levels(as.factor(site_locations$site))
   colScale <- scale_color_manual(name = "",values = myColors)
   
-  if(input$language=="en"){
-  ylab.values<-c("pm25"="Particulate Mass PM2.5 (ug/m3)",
+  ylab.values<-c("pm25"="Particle Mass PM2.5 (ug/m3)",
                    "O3"="Ozone (ppb)",
                    "NO2"="Nitrogen Dioxide (ppb)",
                    "NO" = "Nitrogen Oxide (ppb)",
                    "CO" = "Carbon Monoxide (ppm)")
-  }else if(input$language=="sp")
-    ylab.values<-c("pm25"="Materia Particulada  - PM2.5 (ug/m3)",
-                   "O3"="Ozono (ppb)",
-                   "NO2"="Dióxido de Nitrógeno (ppb)",
-                   "NO" = "Óxido de Nitrógeno  (ppb)",
-                   "CO" = "Monóxido de Carbono (ppm)")
+  
  
   if(varvalue%in%c("CO") & nrow(plotdata)>0){
   print(ggplot(data=plotdata,
@@ -604,8 +339,8 @@ output$poldesc<- renderText({
           scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
            #add to include donovan APCD data
            #geom_line(aes(eval(as.name("hour")), 
-          #               eval(as.name(paste0(varvalue, "_donovan"))),
-          #                color="Donovan Regulatory"), size=1.2)+
+           #              eval(as.name(paste0(varvalue, "_donovan"))),
+           #               color="Donovan Regulatory"), size=1.2)+
            scale_color_manual(name="", values = c(myColors, 
                                                   "Donovan Regulatory"="black"))
          
@@ -632,17 +367,6 @@ output$poldesc<- renderText({
   
   data_summ <- data_summary()
   
-  limitsbypoll<-c("pm25"=80,
-                  "O3"=100,
-                  "NO"=120,
-                  "NO2"=120,
-                  "CO" =2)
-  binsbypoll<-c("pm25"=10,
-                "O3"=10,
-                "NO"=10,
-                "NO2"=10,
-                "CO" =6)
-  
   if(min(data_summ$date_day,na.rm=T)>="2017-03-01") 
     data_summ<-data_summ[!site_short=="martinez",]
   
@@ -655,13 +379,12 @@ output$poldesc<- renderText({
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <- c("#0066b2","#00addd","#00e9a2","#efff3a","#e3cf23","#c69522","#9c6323")
+   palette_rev2 <- rev(brewer.pal(n = 9, "RdYlGn")[1:7]) 
    #rev(c('#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4'))                   
-   pal2 <- colorBin(palette_rev2, bins= binsbypoll[colorBy], pretty=T, na.color ="lightgrey",
-                    c(0,max(limitsbypoll[colorBy],
-                            quantile(data()[,colorBy, 
+   pal2 <- colorBin(palette_rev2,c(0,
+                                   quantile(data()[,colorBy, 
                                                    by=date_day,with=F], 
-                                            na.rm=T, .996))))}
+                                            na.rm=T, .996)), 6, pretty=T, na.color ="lightgrey")}
   
   #}
   
@@ -682,17 +405,6 @@ output$poldesc<- renderText({
                    "NO" = "Nitrogen Oxide (ppb)",
                    "CO" = "Carbon Monoxide (ppm)")
   
-  if(input$language=="sp"){
-    legend.values<-c("pm25"=paste0("Materia Particulada  - PM",
-                                   tags$sub(2.5),
-                                   " (<span>&#181;</span>","g/m",tags$sup(3),
-                                   ")"),
-                     "O3"="Ozono (ppb)",
-                     "NO2"="Dióxido de Nitrógeno (ppb)",
-                     "NO" = "Óxido de Nitrógeno  (ppb)",
-                     "CO" = "Monóxido de Carbono (ppm)")
-  }
-  
   label.units<-c("pm25"="ug/m3",
                  "O3"="ppb",
                  "NO2"="ppb",
@@ -704,8 +416,6 @@ output$poldesc<- renderText({
                                  label.units[colorBy]))
   
   label.vals[!is.finite(colorData)]="No Data"
-  if(input$language=="sp") 
-    label.vals[!is.finite(colorData)]="Sin Datos"
   
   
   if(!is.null(colorData)){
@@ -718,7 +428,7 @@ output$poldesc<- renderText({
               options = markerOptions(draggable = FALSE, riseOnHover=T)) %>%
    addLegend(className = "panel panel-default legend",
              "topleft", pal=pal2, values=colorData, title=HTML(legend.values[colorBy]),
-             layerId="colorLegend",na.label = ifelse(input$language=="en", "No Data","Sin Datos"), opacity=0.8) 
+             layerId="colorLegend",na.label = "No Data", opacity=0.8) 
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
      clearShapes() %>%

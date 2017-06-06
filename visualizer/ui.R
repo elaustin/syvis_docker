@@ -5,7 +5,7 @@ options(device = 'cairo')
 
 # Choices for drop-downs
 vars <- c(
- "Particle Matter" = "pm25", #"Is SuperZIP?" = "superzip",
+ "Particulate Matter" = "pm25", #"Is SuperZIP?" = "superzip",
  "Carbon Monoxide" = "CO", #"Centile score" = "centile",
  "Nitrogen Oxide" = "NO",
  "Nitrogen Dioxide" = "NO2",
@@ -164,20 +164,22 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
             mainPanel(
               h3("About the San Ysidro Air Monitoring Study"),
               "Welcome to the web visualization of the San Ysidro Community Air monitoring project. This two-year project, funded by the California Office of Environmental Health Hazard Assessment (OEHHA), has the primary objective of understanding the air pollution health risks faced by the community.",
-              tags$hr(),
               h3("Acerca del Estudio de Monitoreo del Aire de San Ysidro"),
               "Bienvenido a la visualización por internet del proyecto de monitoreo del Aire de la Comunidad de San Ysidro. Este proyecto de dos años, financiado por la Oficina de Evaluación de Riesgos a la Salud Ambiental (OEHHA), tiene como objetivo principal la comprensión de los riesgos a la salud por la contaminación ambiental que enfrenta la comunidad.",
+              tags$hr(),
+              tags$em(strong(h3(tags$a(href="https://docs.google.com/forms/d/1ePYLqa4SyiobJTVRp1_O_3GrZxhOdaKlZqPScGIXnQc/viewform?edit_requested=true",
+                               "Feedback / Comentarios", target="_blank")))),
+              tags$hr(),
               h3("Project Partners / Socios del Proyecto"),
               img(src="SYorgwithLogo.png", width=500),
               tags$hr(),
-              
               h3("Data Access"),
               "This project has an open data policy. For those wishing to access the data files used to create this visualization, please complete the following ",
               
               strong(tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSe-Wme3vV3eQCHB4KqPxOI2XR-QQm1M3WQmjy-yK2SkblQydg/viewform?usp=sf_link",
                             "webform.", target="_blank")),
               " We do ask that you provide a short description of your intended use of the data. This data is not intended for commercial use.",
-              tags$hr(),
+             
               h3("Acceso a los Datos"),
               "Este Proyecto tiene una política de datos abierta. Para aquellos que quieren acceso a los archivos de datos utilizados para crear esta visualización, por favor rellenen la siguiente",
               
