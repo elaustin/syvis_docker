@@ -655,7 +655,8 @@ output$poldesc<- renderText({
   if(nrow(data_summary1)>1){
    
    colorData2 <- data_summary1[[colorBy]]
-   palette_rev2 <- c("#0066b2","#00addd","#00e9a2","#efff3a","#e3cf23","#c69522","#9c6323")
+  # http://davidjohnstone.net/pages/lch-lab-colour-gradient-picker
+   palette_rev2 <- c("#0066b2","#00addd","#00e9a2","#f2cd00","#c69522","#9c5600","#62452c")
    #rev(c('#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4'))                   
    pal2 <- colorBin(palette_rev2, bins= binsbypoll[colorBy], pretty=T, na.color ="lightgrey",
                     c(0,max(limitsbypoll[colorBy],

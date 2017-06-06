@@ -54,9 +54,9 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
     height = "auto",
     
     h3("San Ysidro Air Explorer"),
-    radioButtons("language",(""),c("English"="en", "Español"="sp"),
-                 inline=T),
-    textOutput("translateMessage"),
+    h3(radioButtons("language",(""),c("English"="en", "Español"="sp"),
+                 inline=T)),
+    #textOutput("translateMessage"),
     dateInput("date", label = h4("Date / Fecha"), value = max(data_wide$date_day, na.rm=T), min="2017-01-01"),
     
     selectInput("color", label=h4("Pollutant / Contaminante"), vars, selected="pm25"),
@@ -118,10 +118,12 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                plotOutput("tsPoll", height = 400),
                tags$hr(),
                
-               p(tags$strong("Interpreting this data with respect to government health based standards:")),
+               strong(textOutput("tsNotationtitle")),
                tags$p(textOutput("tsNotation")),
                htmlOutput('notreg'),
-               tags$hr()
+               tags$hr(),
+               tags$em(strong(h3(tags$a(href="https://docs.google.com/forms/d/1ePYLqa4SyiobJTVRp1_O_3GrZxhOdaKlZqPScGIXnQc/viewform?edit_requested=true",
+                                        "Feedback / Comentarios", target="_blank"))))
              )
            )
           #   h2("Hourly Data Plot"), 
@@ -167,9 +169,6 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
               h3("Acerca del Estudio de Monitoreo del Aire de San Ysidro"),
               "Bienvenido a la visualización por internet del proyecto de monitoreo del Aire de la Comunidad de San Ysidro. Este proyecto de dos años, financiado por la Oficina de Evaluación de Riesgos a la Salud Ambiental (OEHHA), tiene como objetivo principal la comprensión de los riesgos a la salud por la contaminación ambiental que enfrenta la comunidad.",
               tags$hr(),
-              tags$em(strong(h3(tags$a(href="https://docs.google.com/forms/d/1ePYLqa4SyiobJTVRp1_O_3GrZxhOdaKlZqPScGIXnQc/viewform?edit_requested=true",
-                               "Feedback / Comentarios", target="_blank")))),
-              tags$hr(),
               h3("Project Partners / Socios del Proyecto"),
               img(src="SYorgwithLogo.png", width=500),
               tags$hr(),
@@ -181,12 +180,14 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
               " We do ask that you provide a short description of your intended use of the data. This data is not intended for commercial use.",
              
               h3("Acceso a los Datos"),
-              "Este Proyecto tiene una política de datos abierta. Para aquellos que quieren acceso a los archivos de datos utilizados para crear esta visualización, por favor rellenen la siguiente",
+              "Este Proyecto tiene una política de datos abierta. Para aquellos que quieren acceso a los archivos de datos utilizados para crear esta visualización, por favor complete el siguiente",
               
               strong(tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSe-Wme3vV3eQCHB4KqPxOI2XR-QQm1M3WQmjy-yK2SkblQydg/viewform?usp=sf_link",
-                            "forma de internet", target="_blank")),
-              ". Le pediremos que nos proporciones una descripción corta del uso que pretende darle a los datos. Estos datos no son para uso comercial."
-              
+                            "formato de internet", target="_blank")),
+              ". Le pediremos que nos proporciones una descripción corta del uso que pretende darle a los datos. Estos datos no son para uso comercial.",
+              tags$hr(),
+              tags$em(strong(h3(tags$a(href="https://docs.google.com/forms/d/1ePYLqa4SyiobJTVRp1_O_3GrZxhOdaKlZqPScGIXnQc/viewform?edit_requested=true",
+                                       "Feedback / Comentarios", target="_blank"))))
               
               
             )))
