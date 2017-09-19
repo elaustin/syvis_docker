@@ -19,7 +19,12 @@ site_locations<-site_locations[!is.na(longitude)]
 # data_wide<-data.table(dbGetQuery(db.SYdata, sqlcmd))
 # data_wide[,CO:=CO*1000]
 
-data_wide<-fread("http://staff.washington.edu/elaustin/hourly_qa_calibrated_data.csv")
+indexlist<-fread("http://staff.washington.edu/elaustin/index_reference.csv")
+
+
+data_wide<-fread("http://staff.washington.edu/elaustin/hourly_qa_calibrated_data.csv",
+                 nrows=indexlist[2,index])
+data_wide_header<-names(data_wide)
 data_wide[,datetime:=as.POSIXct(datetime)]
 data_wide[,date_day:=format(datetime, "%Y-%m-%d")]
 
@@ -27,10 +32,11 @@ data_wide[,NO_donovan:=NO_donovan*1000]
 data_wide[,NO2_donovan:=NO2_donovan*1000]
 data_wide[,NOX_donovan:=NOX_donovan*1000]
 data_wide[,OZONE_donovan:=OZONE_donovan*1000]
-
 data_wide[,site:=as.factor(site)]
 
-data_wide<-data_wide[datetime>=as.POSIXct("2017-01-01"),]
+
+
+#data_wide<-data_wide[datetime>=as.POSIXct("2017-01-01"),]
 
 data_summary1<-data_wide[,
                         lapply(.SD, FUN = function (x)
@@ -48,3 +54,23 @@ missing_sites<-
 missing_sites<-site_locations[site_short%in%missing_sites]
 missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
 data_summary1<-rbindlist(list(data_summary1,missing_sites),fill=T)
+
+
+getnewdata<-function(wanted_date){
+    start_row<- max(indexlist[as.POSIXct(paste0(year,"-",month,"-01"))>wanted_date,]$index)
+    end_row <-indexlist[as.POSIXct(paste0(year,"-",month,"-01"))<wanted_date,index][2]
+    data_wide<-fread("http://staff.washington.edu/elaustin/hourly_qa_calibrated_data.csv",
+                     skip=start_row, nrow=end_row-start_row)
+    names(data_wide)<-data_wide_header
+    data_wide[,datetime:=as.POSIXct(datetime)]
+    data_wide[,date_day:=format(datetime, "%Y-%m-%d")]
+    
+    data_wide[,NO_donovan:=NO_donovan*1000]
+    data_wide[,NO2_donovan:=NO2_donovan*1000]
+    data_wide[,NOX_donovan:=NOX_donovan*1000]
+    data_wide[,OZONE_donovan:=OZONE_donovan*1000]
+    
+    data_wide[,site:=as.factor(site)]
+    
+    data_wide
+  }

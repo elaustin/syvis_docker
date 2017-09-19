@@ -17,7 +17,7 @@ shinyServer(function(input, output, session) {
   
   datats <- reactive ({
     
-      if(input$radio == "All"){
+        if(input$radio == "All"){
         data_wide
       } else {
         data_wide[site%in%input$tssites]
@@ -25,15 +25,20 @@ shinyServer(function(input, output, session) {
     })
   
   data <- reactive ({
-    
+    wanted_date<-as.POSIXct(input$date)
+    if((wanted_date+7*60*24*60) <= min(data_wide[,date_day]))
+      {
+      data_wide<-getnewdata(wanted_date)
+      }
     data_wide
   })
   
   data_summary <- reactive ({
+    
     data_summary<-data_wide[date_day%in%as.character(input$date),
                             lapply(.SD, FUN = function (x)
-                              mean(as.numeric(as.character(x)), na.rm=T)), .SDcols=c("longitude","latitude",
-                                      c("pm25","CO","NO","NO2","O3")),
+                              mean(as.numeric(as.character(x)), na.rm=T)), 
+                            .SDcols=c("longitude","latitude","pm25","CO","NO","NO2","O3"),
                             by="site_short"]
     missing_sites<-
       site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
@@ -599,9 +604,9 @@ output$tsNotationtitle<-renderText({
     )
   }
   
-  if(!varvalue%in%c("CO")&nrow(plotdata)>0){
-    
-   print(ggplot(data=plotdata,
+  if(!varvalue%in%c("CO")&nrow(plotdata)>0)
+    {
+    print(ggplot(data=plotdata,
                  aes_string("hour",varvalue, color="site")) +
           geom_line(size=1.2)+theme_pander(18)+xlab("")+
            scale_x_continuous(limits=c(0,24),
@@ -613,13 +618,13 @@ output$tsNotationtitle<-renderText({
           ylab(ylab.values[varvalue])+
           guides(label="",colour = guide_legend(override.aes = list(size=3)))+
           guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-          scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
+          scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
            #add to include donovan APCD data
-           #geom_line(aes(eval(as.name("hour")), 
+          # geom_line(aes(eval(as.name("hour")),
           #               eval(as.name(paste0(varvalue, "_donovan"))),
           #                color="Donovan Regulatory"), size=1.2)+
-           scale_color_manual(name="", values = c(myColors, 
-                                                  "Donovan Regulatory"="black"))
+          #  scale_color_manual(name="", values = c(myColors, 
+          #                                         "Donovan Regulatory"="black"))
          
    )}
   
