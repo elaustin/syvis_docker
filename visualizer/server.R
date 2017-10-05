@@ -553,7 +553,7 @@ output$tsNotationtitle<-renderText({
     
   maxval<-quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995)
   
-  myColors <- brewer.pal(nrow(site_locations),"Paired")
+  myColors <- c(brewer.pal(nrow(site_locations),"Paired"), "darkpink")
   names(myColors) <- levels(as.factor(site_locations$site))
   colScale <- scale_color_manual(name = "",values = myColors)
   
