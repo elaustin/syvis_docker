@@ -113,7 +113,8 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
                    choices=site_locations$site )),
                  
              
-               selectInput("tsvars", label=h4("Pollutant / Contaminante"), vars, selected="pm25")
+               selectInput("tsvars", label=h4("Pollutant / Contaminante"), vars, selected="pm25"),
+               sliderInput("ylimpm", h4("Select Plot Limits"),min=0,step=10,value=10,max=10)
              ),
              mainPanel(
                

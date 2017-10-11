@@ -31,6 +31,7 @@ shinyServer(function(input, output, session) {
       data_wide<-getnewdata(wanted_date)
       }
     data_wide
+    
   })
   
   data_summary <- reactive ({
@@ -45,6 +46,15 @@ shinyServer(function(input, output, session) {
     missing_sites<-site_locations[site_short%in%missing_sites]
     missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
     data_summary<-rbindlist(list(data_summary,missing_sites),fill=T)
+    
+    quantileval<-as.numeric(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995))
+    maxval<-max(data_wide[,input$tsvars,with=F],na.rm=T)
+    updateSliderInput(session, "ylimpm",max=ceiling(maxval), 
+                      value=quantileval)
+    if(input$tsvars%in%"CO")
+      updateSliderInput(session, "ylimpm",max=ceiling(maxval), 
+                        value=quantileval, step=0.2)
+    
     data_summary
     
   })
@@ -144,17 +154,6 @@ output$translateMessage <- reactive({
   ifelse(input$language=="sp","La versión en español está en desarrollo.",
          "")})
          
-output$pollDescrip <- reactive({
-  varvalue<-input$tsvars
-  if(varvalue%in%"pm25"){
-    print("This is a test pm25")
-  } else if(varvalue%in%"O3"){
-      print("This is a test O3")
-  } else if(varvalue%in%"NO2"){
-    print("This is a test NO2")
-  } else "Nothing"
-  
-})
 })
   
   output$citedesc <- renderText({
@@ -544,16 +543,11 @@ output$tsNotationtitle<-renderText({
    }
  
   #minval<-min(data_wide[,input$tsvars,with=F],na.rm=T)
-  maxvalnumbers<-c("pm25"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
-                   "O3"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
-                   "NO2"=max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
-                   "NO" = max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),50),
-                   "CO" = max(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995),1))
-    
-    
-  maxval<-quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995)
   
-  myColors <- c(brewer.pal(nrow(site_locations),"Paired"), "darkpink")
+    
+  maxval<-as.numeric(as.character(input$ylimpm))
+  
+  myColors <- rainbow(nrow(site_locations))
   names(myColors) <- levels(as.factor(site_locations$site))
   colScale <- scale_color_manual(name = "",values = myColors)
   
