@@ -9,32 +9,18 @@ library(ggplot2)
 library(ggthemes)
 
 
+
 options(device='cairo')
 
 shinyServer(function(input, output, session) {
  
 ##create data
   
-  datats <- reactive ({
-    
-        if(input$radio == "All"){
-        data_wide
-      } else {
-        data_wide[site%in%input$tssites]
-      }
-    })
+
   
-  data <- reactive ({
-    wanted_date<-as.POSIXct(input$date)
-    if((wanted_date+7*60*24*60) <= min(data_wide[,date_day]))
-      {
-      data_wide<-getnewdata(wanted_date)
-      }
-    data_wide
-    
-  })
   
-  data_summary <- reactive ({
+  
+  data_summR <- reactive ({
     
     data_summary<-data_wide[date_day%in%as.character(input$date),
                             lapply(.SD, FUN = function (x)
@@ -45,7 +31,7 @@ shinyServer(function(input, output, session) {
       site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
     missing_sites<-site_locations[site_short%in%missing_sites]
     missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
-    data_summary<-rbindlist(list(data_summary,missing_sites),fill=T)
+    data_summary <<- rbindlist(list(data_summary,missing_sites),fill=T)
     
     quantileval<-as.numeric(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995))
     maxval<-max(data_wide[,input$tsvars,with=F],na.rm=T)
@@ -55,8 +41,60 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "ylimpm",max=ceiling(maxval), 
                         value=quantileval, step=0.2)
     
+    
     data_summary
     
+  })
+  
+  datavalts <- reactive ({
+    if(!is.null(input$date1)){
+    wanted_date<-as.POSIXct(input$date1)
+    mindate = as.POSIXct(min(datavals[,date_day]))
+    maxdate = as.POSIXct(max(datavals[,date_day]))
+    if((wanted_date+7*60*24*60) <= mindate)
+    {
+      datavals <- getnewdata(wanted_date)
+    }
+    
+    if((wanted_date) > maxdate)
+    {
+      datavals <- getnewdata(wanted_date)
+    }
+    
+    datavals <<- datavals
+    datavals
+    }
+  })
+  
+  data <- reactive ({
+   
+    wanted_date<-as.POSIXct(input$date)
+    mindate = as.POSIXct(min(data_wide[,date_day]))
+    maxdate = as.POSIXct(max(data_wide[,date_day]))
+    if((wanted_date+7*60*24*60) <= mindate)
+    {
+      data_wide <- getnewdata(wanted_date)
+    }
+    
+    if((wanted_date) > maxdate)
+    {
+      data_wide <- getnewdata(wanted_date)
+    }
+    
+    data_wide <<- data_wide
+    data_wide
+    
+  })
+  
+  datats <- reactive ({
+    
+    datavals <<- datavalts() 
+    
+    if(input$radio == "All"){
+      datavals
+    } else {
+      datavals[site%in%input$tssites]
+    }
   })
   
  ## Interactive Map ###########################################
@@ -640,8 +678,8 @@ output$tsNotationtitle<-renderText({
   # } else {
   #  #colorData <- zipdata[[colorBy]]
   
-  
-  data_summ <- data_summary()
+  data_wide <- data()
+  data_summ <- data_summR()
   
   limitsbypoll<-c("pm25"=80,
                   "O3"=100,
@@ -759,7 +797,7 @@ output$tsNotationtitle<-renderText({
             "NO" ="ppb",
             "CO" = "ppm")
   
-  selectedSite <- data_summary()[site_short%in%id,]
+  selectedSite <- data_summR()[site_short%in%id,]
   
   
   content <- as.character(tagList(

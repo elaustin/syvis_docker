@@ -72,8 +72,8 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
      class = "panel panel-default", 
      draggable = F, bottom = 10, left = 10, right = "auto", top = "auto",
      width = "auto", height = "auto",
-     HTML('<button data-toggle="collapse" data-target="#cites">&#9733</button>'),
-     tags$div(id = 'cites',  class="collapse in",
+     HTML('<button data-toggle="collapse" data-target="#cites">INFORMATION</button>'),
+     tags$div(id = 'cites',  class="collapse",
     htmlOutput('citedesc'))
    )
   )
