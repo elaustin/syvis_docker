@@ -10,6 +10,10 @@ library(data.table)
 site_locations<-fread("http://staff.washington.edu/elaustin/site_locations_nopred.csv")
 site_locations<-site_locations[!is.na(longitude)]
 
+myColors <- rainbow(nrow(site_locations))
+names(myColors) <- levels(as.factor(site_locations$site))
+colScale <- scale_color_manual(name = "",values = myColors)
+
 # datechar<-("2017-01-01")
 # 
 # db.SYdata = dbConnect(SQLite(), dbname="SYdata.sqlite")
@@ -58,11 +62,11 @@ setnames(data_wide, c("OZONE_donovan", "PM25HR_donovan"), c("O3_donovan", "pm25_
 
 
 
-missing_sites<-
- site_locations$site_short[!site_locations$site_short%in%data_summary1$site_short]
-missing_sites<-site_locations[site_short%in%missing_sites]
-missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
-data_summary1<-rbindlist(list(data_summary1,missing_sites),fill=T)
+# missing_sites<-
+#  site_locations$site_short[!site_locations$site_short%in%data_summary1$site_short]
+# missing_sites<-site_locations[site_short%in%missing_sites]
+# missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
+# data_summary1<-rbindlist(list(data_summary1,missing_sites),fill=T)
 
 datavals<- data_wide
 

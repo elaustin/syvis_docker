@@ -27,11 +27,11 @@ shinyServer(function(input, output, session) {
                               mean(as.numeric(as.character(x)), na.rm=T)), 
                             .SDcols=c("longitude","latitude","pm25","CO","NO","NO2","O3"),
                             by="site_short"]
-    missing_sites<-
-      site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
-    missing_sites<-site_locations[site_short%in%missing_sites]
-    missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
-    data_summary <<- rbindlist(list(data_summary,missing_sites),fill=T)
+    # missing_sites<-
+    #   site_locations$site_short[!site_locations$site_short%in%data_summary$site_short]
+    # missing_sites<-site_locations[site_short%in%missing_sites]
+    # missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
+    # data_summary <<- rbindlist(list(data_summary,missing_sites),fill=T)
     
     quantileval<-as.numeric(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995))
     maxval<-max(data_wide[,input$tsvars,with=F],na.rm=T)
@@ -48,10 +48,10 @@ shinyServer(function(input, output, session) {
   
   datavalts <- reactive ({
     if(!is.null(input$date1)){
-    wanted_date<-as.POSIXct(input$date1)
+    wanted_date <- as.POSIXct(input$date1)
     mindate = as.POSIXct(min(datavals[,date_day]))
     maxdate = as.POSIXct(max(datavals[,date_day]))
-    if((wanted_date+7*60*24*60) <= mindate)
+    if((wanted_date-60*24*60) <= mindate)
     {
       datavals <- getnewdata(wanted_date)
     }
@@ -67,18 +67,22 @@ shinyServer(function(input, output, session) {
   })
   
   data <- reactive ({
-   
+    
     wanted_date<-as.POSIXct(input$date)
     mindate = as.POSIXct(min(data_wide[,date_day]))
     maxdate = as.POSIXct(max(data_wide[,date_day]))
-    if((wanted_date+7*60*24*60) <= mindate)
+    if((wanted_date-60*24*60) <= mindate)
     {
       data_wide <- getnewdata(wanted_date)
     }
     
-    if((wanted_date) > maxdate)
+    if((wanted_date) > maxdate & wanted_date <= Sys.time())
     {
       data_wide <- getnewdata(wanted_date)
+    }
+    
+    if(wanted_date > Sys.time()) {
+      return()
     }
     
     data_wide <<- data_wide
@@ -585,10 +589,6 @@ output$tsNotationtitle<-renderText({
     
   maxval<-as.numeric(as.character(input$ylimpm))
   
-  myColors <- rainbow(nrow(site_locations))
-  names(myColors) <- levels(as.factor(site_locations$site))
-  colScale <- scale_color_manual(name = "",values = myColors)
-  
   if(input$language=="en"){
   ylab.values<-c("pm25"="Particulate Mass PM2.5 (ug/m3)",
                    "O3"="Ozone (ppb)",
@@ -611,12 +611,13 @@ output$tsNotationtitle<-renderText({
                                       "12 pm",
                                       paste(7:11*2-12,"pm"))) +
           theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+
-         geom_line(size=1.2)+colScale+
+         geom_line(size=1.2)+
           theme_pander(18)+
          ylab("Carbon Monoxide (ppm)")+
          guides(label="",colour = guide_legend(override.aes = list(size=3)))+
          guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-        scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
+        scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))+
+          scale_color_manual(name="", values = c(myColors))
         )}
         
   if(nrow(plotdata)<1)
@@ -650,12 +651,12 @@ output$tsNotationtitle<-renderText({
           ylab(ylab.values[varvalue])+
           guides(label="",colour = guide_legend(override.aes = list(size=3)))+
           guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-          scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval))
+          scale_y_continuous(breaks = seq(0, maxval, scaleby), limits=c(0, maxval)) +
            #add to include donovan APCD data
           # geom_line(aes(eval(as.name("hour")),
           #               eval(as.name(paste0(varvalue, "_donovan"))),
           #                color="Donovan Regulatory"), size=1.2)+
-          #  scale_color_manual(name="", values = c(myColors, 
+          scale_color_manual(name="", values = c(myColors))
           #                                         "Donovan Regulatory"="black"))
          
    )}
@@ -677,6 +678,9 @@ output$tsNotationtitle<-renderText({
   #  pal <- colorFactor("Spectral", data_summary$pm25)
   # } else {
   #  #colorData <- zipdata[[colorBy]]
+  
+  if(as.POSIXct(input$date) >= Sys.time())
+     return()
   
   data_wide <- data()
   data_summ <- data_summR()
@@ -709,7 +713,7 @@ output$tsNotationtitle<-renderText({
    #rev(c('#d73027','#fc8d59','#fee090','#e0f3f8','#91bfdb','#4575b4'))                   
    pal2 <- colorBin(palette_rev2, bins= binsbypoll[colorBy], pretty=T, na.color ="lightgrey",
                     c(0,max(limitsbypoll[colorBy],
-                            quantile(data()[,colorBy, 
+                            quantile(data_wide[,colorBy, 
                                                    by=date_day,with=F], 
                                             na.rm=T, .996))))}
   
@@ -760,7 +764,8 @@ output$tsNotationtitle<-renderText({
   
   if(!is.null(colorData)){
   leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
-   clearShapes() %>%
+   clearShapes() %>%  clearPopups() %>%
+      clearMarkers() %>%
    addCircleMarkers(~longitude, ~latitude, radius= 12, layerId = ~site_short, 
               stroke=T, color="black",weight=2, opacity=.8,
               fillOpacity=1, 
@@ -771,7 +776,8 @@ output$tsNotationtitle<-renderText({
              layerId="colorLegend",na.label = ifelse(input$language=="en", "No Data","Sin Datos"), opacity=0.8) 
    }  else {
     leafletProxy("map", data = data_summ) %>% #data = zipdata) %>%
-     clearShapes() %>%
+     clearShapes() %>% clearPopups() %>%
+       clearMarkers() %>%
        addCircleMarkers(~longitude, ~latitude, radius= 12, 
                         layerId = ~site_short, 
                       stroke=T, color="black",weight=2, opacity=.8,
@@ -858,7 +864,7 @@ output$tsNotationtitle<-renderText({
   })
  })
 
- output$sitetable <- DT::renderDataTable({
+ output$sitetable <- shiny::renderDataTable({
   df<-data_wide[site%in%input$sites & datetime>=as.POSIXct(input$startdate) , 
                 c("datetime","site","longitude", "latitude", input$pollutants),
                 with=F]
@@ -883,7 +889,7 @@ output$tsNotationtitle<-renderText({
   # action <- DT::dataTableAjax(session, df)
 
  # DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
-  DT::datatable(df)
+  shiny::datatable(df)
  })
 })
 
