@@ -1,6 +1,7 @@
 rm(list = ls())
 
 library(data.table)
+library(ggplot)
 #library(measurements)
 #library(RSQLite)
 
