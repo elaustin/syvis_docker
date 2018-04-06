@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
   
   data_summR <- reactive ({
     
-    data_summary<-data_wide[date_day%in%as.character(input$date),
+    data_summary<-data_wide[date_day%in%as.character(input$date1),
                             lapply(.SD, FUN = function (x)
                               mean(as.numeric(as.character(x)), na.rm=T)), 
                             .SDcols=c("longitude","latitude","pm25","CO","NO","NO2","O3"),
@@ -33,9 +33,9 @@ shinyServer(function(input, output, session) {
     # missing_sites<-missing_sites[,c("site_short","latitude","longitude"),with=F]
     # data_summary <<- rbindlist(list(data_summary,missing_sites),fill=T)
     
-    quantileval<-as.numeric(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .9995))
+    quantileval<-as.numeric(quantile(data_wide[,input$tsvars,with=F],na.rm=T, .995))
     maxval<-max(data_wide[,input$tsvars,with=F],na.rm=T)
-    updateSliderInput(session, "ylimpm",max=ceiling(maxval), 
+    updateSliderInput(session, "ylimpm",max= ceiling(maxval), 
                       value=quantileval)
     if(input$tsvars%in%"CO")
       updateSliderInput(session, "ylimpm",max=ceiling(maxval), 
@@ -46,29 +46,29 @@ shinyServer(function(input, output, session) {
     
   })
   
-  datavalts <- reactive ({
-    if(!is.null(input$date1)){
-    wanted_date <- as.POSIXct(input$date1)
-    mindate = as.POSIXct(min(datavals[,date_day]))
-    maxdate = as.POSIXct(max(datavals[,date_day]))
-    if((wanted_date-60*24*60) <= mindate)
-    {
-      datavals <- getnewdata(wanted_date)
-    }
-    
-    if((wanted_date) > maxdate)
-    {
-      datavals <- getnewdata(wanted_date)
-    }
-    
-    datavals <<- datavals
-    datavals
-    }
-  })
+  # datavalts <- reactive ({
+  #   if(!is.null(input$date1)){
+  #   wanted_date <- as.POSIXct(input$date1)
+  #   mindate = as.POSIXct(min(datavals[,date_day]))
+  #   maxdate = as.POSIXct(max(datavals[,date_day]))
+  #   if((wanted_date-60*24*60) <= mindate)
+  #   {
+  #     datavals <- getnewdata(wanted_date)
+  #   }
+  #   
+  #   if((wanted_date) > maxdate)
+  #   {
+  #     datavals <- getnewdata(wanted_date)
+  #   }
+  #   
+  #   datavals <<- datavals
+  #   datavals
+  #   }
+  # })
   
   data <- reactive ({
     
-    wanted_date<-as.POSIXct(input$date)
+    wanted_date<-as.POSIXct(input$date1)
     mindate = as.POSIXct(min(data_wide[,date_day]))
     maxdate = as.POSIXct(max(data_wide[,date_day]))
     if((wanted_date-60*24*60) <= mindate)
@@ -92,7 +92,7 @@ shinyServer(function(input, output, session) {
   
   datats <- reactive ({
     
-    datavals <<- datavalts() 
+    datavals <<- data() 
     
     if(input$radio == "All"){
       datavals
