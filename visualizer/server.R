@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
   
   data_summR <- reactive ({
     
-    data_summary<-data_wide[date_day%in%as.character(input$date1),
+    data_summary<-data_wide[date_day%in%as.character(input$date),
                             lapply(.SD, FUN = function (x)
                               mean(as.numeric(as.character(x)), na.rm=T)), 
                             .SDcols=c("longitude","latitude","pm25","CO","NO","NO2","O3"),
@@ -68,7 +68,7 @@ shinyServer(function(input, output, session) {
   
   data <- reactive ({
     
-    wanted_date<-as.POSIXct(input$date1)
+    wanted_date<-as.POSIXct(input$date)
     mindate = as.POSIXct(min(data_wide[,date_day]))
     maxdate = as.POSIXct(max(data_wide[,date_day]))
     if((wanted_date-60*24*60) <= mindate)
@@ -575,6 +575,10 @@ output$tsNotationtitle<-renderText({
    #fix selecting sites!!!!
    varvalue<-input$tsvars
    scaleby<-ifelse(input$tsvars=="CO",0.5,10)
+   
+   updateDateInput(session, "date", value=input$date1)
+   
+   
    plotdata=datats()[date_day%in%as.character(input$date1)]
    plotdata[,hour:=hour(plotdata$datetime)]
    plotdata[,site:=factor(site, levels=unique(site_locations$site))]
@@ -669,6 +673,8 @@ output$tsNotationtitle<-renderText({
  observe({
   colorBy <- input$color
   #sizeBy <- input$size
+  
+  updateDateInput(session, "date1", value=input$date)
   
   #if (colorBy == "superzip") {
   #  # Color and palette are treated specially in the "superzip" case, because
