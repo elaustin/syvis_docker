@@ -73,7 +73,7 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
      draggable = F, bottom = 10, left = 10, right = "auto", top = "auto",
      width = "auto", height = "auto",
      HTML('<button data-toggle="collapse" data-target="#cites">INFORMATION</button>'),
-     tags$div(id = 'cites',  class="collapse",
+     tags$div(id = 'cites',  #class="collapse",
     htmlOutput('citedesc'))
    )
   )
@@ -167,7 +167,8 @@ shinyUI(navbarPage("BETA ---- Community Monitoring --- BETA", id = "nav",
           fluidPage(
            
             mainPanel(
-              h3("About the San Ysidro Air Monitoring Study"),
+              h3("About the San Ysidro Air Monitoring Study"),br(),
+              "As of April 30, 2018, the CalEPA-funded San Ysidro air quality research project has concluded.  We are currently completing a final report to the CalEPA Office of Environmental Health Hazard Assessment (OEHHA) that will document the findings from 2 years of successful community-engaged air quality monitoring for San Ysidro. Over a Gigabyte of air quality data has been collected in the study, making it one of the largest community air quality monitoring projects in California.  We are currently seeking funding from the CARB AB617 program to sustain and upgrade our air quality monitoring in San Ysidro. Until these funds are available, service for the syairstudy.org website will be degraded.",hr(),
               "Welcome to the web visualization of the San Ysidro Community Air monitoring project. This two-year project, funded by the California Office of Environmental Health Hazard Assessment (OEHHA), has the primary objective of understanding the air pollution health risks faced by the community.",
               h3("Acerca del Estudio de Monitoreo del Aire de San Ysidro"),
               "Bienvenido a la visualización por internet del proyecto de monitoreo del Aire de la Comunidad de San Ysidro. Este proyecto de dos años, financiado por la Oficina de Evaluación de Riesgos a la Salud Ambiental (OEHHA), tiene como objetivo principal la comprensión de los riesgos a la salud por la contaminación ambiental que enfrenta la comunidad.",

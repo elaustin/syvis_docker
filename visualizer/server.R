@@ -200,8 +200,7 @@ output$translateMessage <- reactive({
   
   output$citedesc <- renderText({
     if(input$language=="en") {
-      print(paste(tags$b("Community monitoring data is NOT regulatory."), tags$br(),
-                  tags$b("The website is currently in BETA mode. All data is preliminary and may be updated at a later time."), tags$br(),
+      print(paste(tags$b("As of April 30, 2018, the CalEPA-funded San Ysidro air quality research project has concluded. We are currently seeking funding from the CARB AB617 program to sustain and upgrade our air quality monitoring in San Ysidro. Until these funds are available, service for the syairstudy.org website will be degraded."), tags$br(),
                   'Data compiled for the ',
                   tags$a(href="http://deohs.washington.edu/syairstudy",
                          tags$em('San Ysidro Community Air Monitoring Data Project'), target="_blank"),
