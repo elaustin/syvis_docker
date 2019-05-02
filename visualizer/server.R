@@ -896,5 +896,20 @@ output$tsNotationtitle<-renderText({
  # DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
   shiny::datatable(df)
  })
+ 
+ observeEvent(input$language, {
+   srcval = ifelse(input$language == "en", 
+                   "FAQ sheet_Border2020_Ready1.png",
+                   "FAQ sheet_Border2020_Spa_Ready1.png")
+   output$pdfview <- renderUI({
+     tags$img(style="width:100%;",
+                 frameborder="0", 
+                 d="iframe",
+                 src=srcval)
+   })
+ })
+ 
 })
+
+
 
