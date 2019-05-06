@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
     libssl-dev
 
 # basic shiny functionality
-RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'rmarkdown','pacman'), repos='https://cloud.r-project.org/')"
 
 # install dependencies of the SYVisualization app
-RUN R -e "pacman::p_load(c('leaflet', 'RColorBrewer', 'scales', 'lattice', 'dplyr', 'DT', 'data.table','ggplot2', 'ggthemes'), repos='https://cloud.r-project.org/')"
+RUN R -e "pacman::p_load(leaflet, RColorBrewer, scales, lattice, dplyr, DT, data.table, ggplot2, ggthemes, repos='https://cloud.r-project.org/')"
 
 # copy the app to the image
 RUN mkdir /root/visualizer
